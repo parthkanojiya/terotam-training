@@ -1,0 +1,102 @@
+.transactions-section {
+  // margin: 10px;
+  background: white;
+  border-radius: 10px;
+  padding: 1.5rem;
+  // box-shadow: 0 1px 1px rgba(0, 0, 0, 0.12), 0 2px 2px rgba(0, 0, 0, 0.12);
+  // border: 1px solid #d9d9d9;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.12), 0 2px 2px rgba(0, 0, 0, 0.12) !important;
+  min-height: 515px;
+  transition: all 0.5s ease-in-out !important;
+
+  .transactions-heading {
+    .export-csv,
+    .import-csv {
+      padding: 6px 8px;
+      background: white;
+      border: 1px solid #d9d9d9;
+      border-radius: 6px;
+      font-weight: 500;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    :disabled {
+      background-color: #f4f4f4;
+    }
+
+    // .import-csv {
+    //   background: #387ef5;
+    //   border: 1px solid #387ef5;
+    // }
+
+    ul li {
+      background: #f4f4f4;
+      padding: 7px 8px;
+      border-radius: 6px;
+      font-weight: 500;
+      font-size: 14px;
+      cursor: pointer;
+      border: 1px solid #d9d9d9;
+      height: 32px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      button {
+        background: none;
+        border: none;
+        outline: none;
+        cursor: pointer;
+      }
+    }
+
+    .ant-space,
+    .ant-space-item,
+    .ant-select {
+      width: 160px !important;
+    }
+  }
+
+  .import-csv {
+    background: #7774ff;
+    // color: white;
+    border: none;
+  }
+
+  .table {
+    margin-top: 1rem;
+  }
+
+  .table_component {
+    overflow: auto;
+    width: 100%;
+  }
+
+  .table_component table {
+    height: 100%;
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+    border-spacing: 1px;
+    text-align: left;
+  }
+
+  .table_component caption {
+    caption-side: top;
+    text-align: left;
+  }
+
+  .table_component th {
+    background-color: #ededed;
+    color: #000000;
+    padding: 18px 10px;
+  }
+
+  .table_component td {
+    background-color: #ffffff;
+    color: #000000;
+    padding: 18px 10px;
+    border-bottom: 1px solid #ededed;
+    font-size: 14px;
+  }
+}
