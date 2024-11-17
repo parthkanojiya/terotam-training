@@ -40,23 +40,6 @@ function App() {
   const navigate = useNavigate();
 
   return (
-    // <div>
-    //   <div className="header">
-    //     <Sidebar />
-    //     <Header />
-    //   </div>
-    //   <div className="main-content">
-    //     <Routes>
-    //       <Route path="/" element={<Home />} />
-    //       <Route path="/dashboard" element={<Dashboard />} />
-    //       <Route path="/categories" element={<Categories />} />
-    //       <Route path="/incomes" element={<Incomes />} />
-    //       <Route path="/expenses" element={<Expenses />} />
-    //       <Route path="/transactions" element={<Transactions />} />
-    //     </Routes>
-    //   </div>
-    // </div>
-
     <Layout>
       <Sider trigger={null} collapsible collapsed={collapsed}>
         <Link to="/" className="demo-logo-vertical">

@@ -34,20 +34,8 @@ class Categories extends Component {
     }
   }
 
-  showModal = () => {
-    this.setState({ isModalOpen: true });
-  };
-
-  closeModalOnSubmit = () => {
-    this.setState({ isModalOpen: false });
-  };
-
-  handleOk = () => {
-    this.setState({ isModalOpen: false });
-  };
-
-  handleCancel = () => {
-    this.setState({ isModalOpen: false });
+  toggleModal = (isOpen) => {
+    this.setState({ isModalOpen: isOpen });
   };
 
   render() {
@@ -86,7 +74,10 @@ class Categories extends Component {
           <div className="transactions-heading flex justify-between item-center">
             <h3>Categories</h3>
             <div className="flex justify-between item-center gap-4">
-              <button className="import-csv" onClick={this.showModal}>
+              <button
+                className="import-csv"
+                onClick={() => this.toggleModal(true)}
+              >
                 Add Categories
               </button>
             </div>
@@ -96,11 +87,11 @@ class Categories extends Component {
             title="Add Categories"
             footer={false}
             open={isModalOpen}
-            onOk={this.handleOk}
-            onCancel={this.handleCancel}
+            onOk={() => this.toggleModal(false)}
+            onCancel={() => this.toggleModal(false)}
             style={{ maxWidth: 400 }}
           >
-            <CategoryForm closeModalOnSubmit={this.closeModalOnSubmit} />
+            <CategoryForm closeModalOnSubmit={() => this.toggleModal(false)} />
           </Modal>
 
           <div className="table">

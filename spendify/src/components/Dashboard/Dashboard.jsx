@@ -15,33 +15,6 @@ class Dashboard extends Component {
     };
   }
 
-  // componentDidMount() {
-  //   const fetchData = async () => {
-  //     // Read "Incomes" data
-  //     const incomesSnapshot = await getDocs(collection(db, "incomes"));
-  //     const incomesData = incomesSnapshot.docs.map((doc) => ({
-  //       ...doc.data(),
-  //       id: doc.id,
-  //       type: "Income",
-  //     }));
-
-  //     // Read "expenses" data
-  //     const expensesSnapshot = await getDocs(collection(db, "expenses"));
-  //     const expensesData = expensesSnapshot.docs.map((doc) => ({
-  //       ...doc.data(),
-  //       id: doc.id,
-  //       type: "Expense",
-  //     }));
-
-  //     this.setState({
-  //       incomes: incomesData,
-  //       expenses: expensesData,
-  //       transaction: [...incomesData, ...expensesData],
-  //     });
-  //   };
-  //   fetchData();
-  // }
-
   componentDidMount() {
     const fetchData = async () => {
       // fetch "transactions" data
@@ -50,9 +23,7 @@ class Dashboard extends Component {
         id: doc.id,
         ...doc.data(),
       }));
-      // this.setState({
-      //   transaction: [...transactionsData],
-      // });
+
       this.setState({ transaction: transactionsData });
     };
     fetchData();

@@ -45,32 +45,6 @@ class CategoryForm extends Component {
     if (this.unsubscribe) this.unsubscribe();
   }
 
-  // handleNameChange = (event) => {
-  //   this.setState({ name: event.target.value });
-  // };
-
-  /* handleSubmit = async (event) => {
-    event.preventDefault();
-    const { id, name } = this.state;
-    const data = { id, name };
-    localStorage.setItem("categories", JSON.stringify(data));
-
-    try {
-      await addDoc(collection(db, "categories"), {
-        id,
-        name,
-      });
-
-      const { closeModalOnSubmit } = this.props;
-      if (closeModalOnSubmit) closeModalOnSubmit();
-    } catch (error) {
-      console.error("Error adding document to Firestore: ", error);
-    }
-
-    // Reset form
-    this.setState({ id: crypto.randomUUID(), name: "" });
-  }; */
-
   onFinish = async (values) => {
     const formattedValues = {
       ...values,
@@ -87,7 +61,6 @@ class CategoryForm extends Component {
       console.error("Error adding document to Firestore: ", error);
     }
 
-    // Reset all form fields after submit
     this.formRef.current.resetFields();
   };
 
@@ -105,19 +78,6 @@ class CategoryForm extends Component {
     };
 
     return (
-      // <form onSubmit={this.handleSubmit}>
-      //   <div className="input-fields">
-      //     <label>Name:</label>
-      //     <input
-      //       type="text"
-      //       placeholder="Enter Category Name"
-      //       value={this.state.name}
-      //       onChange={this.handleNameChange}
-      //     />
-      //   </div>
-
-      //   <button type="submit">Add</button>
-      // </form>
       <Form
         {...layout}
         ref={this.formRef}

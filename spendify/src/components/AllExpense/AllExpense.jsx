@@ -1,7 +1,6 @@
 import React from "react";
 import "./style.less";
 import "../../global.less";
-
 import finance from "../../assets/finance.png";
 import allExpense from "../../assets/all-expenses.png";
 import FinanceChart from "../FinanceChart/FinanceChart";

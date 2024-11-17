@@ -26,66 +26,6 @@ class Expenses extends Component {
     };
   }
 
-  // componentDidMount() {
-  //   const expensesCollection = collection(db, "expenses");
-
-  //   this.unsubscribe = onSnapshot(expensesCollection, (snapshot) => {
-  //     const expensesData = snapshot.docs.map((doc) => ({
-  //       id: doc.id,
-  //       ...doc.data(),
-  //     }));
-  //     this.setState({ expenses: expensesData, allExpenses: expensesData });
-
-  //     // Format categories for Select options
-  //     const categoryOptions = expensesData.map((category) => ({
-  //       id: category.id,
-  //       value: category.category,
-  //       label: category.category,
-  //     }));
-
-  //     // Remove duplicate items in the "categoryOptions" array
-  //     const uniqueCategories = categoryOptions.filter(
-  //       (item, index, self) =>
-  //         self.findIndex((prevItem) => prevItem.value === item.value) === index
-  //     );
-  //     this.setState({ categories: uniqueCategories });
-  //   });
-  // }
-
-  // componentWillUnmount() {
-  //   if (this.unsubscribe) this.unsubscribe();
-  //   if (this.unsubscribeCategories) this.unsubscribeCategories();
-  // }
-
-  // showModal = () => {
-  //   this.setState({ isModalOpen: true });
-  // };
-
-  // handleOk = () => {
-  //   this.setState({ isModalOpen: false });
-  // };
-
-  // handleCancel = () => {
-  //   this.setState({ isModalOpen: false });
-  // };
-
-  // closeModalOnSubmit = () => {
-  //   this.setState({ isModalOpen: false });
-  // };
-
-  // handleCategoryChange = (value) => {
-  //   this.setState({ selectedCategory: value });
-
-  //   if (value) {
-  //     const filteredExpenseItems = this.state.allExpenses.filter(
-  //       (item) => item.category === value
-  //     );
-  //     this.setState({ expenses: filteredExpenseItems });
-  //   } else {
-  //     this.setState({ expenses: this.state.allExpenses });
-  //   }
-  // };
-
   componentDidMount() {
     const transactionsCollection = collection(db, "transactions");
     const expenseQuery = query(
@@ -103,20 +43,6 @@ class Expenses extends Component {
         allExpenses: transactionsData,
         categories: this.getUniqueCategories(transactionsData),
       });
-
-      /* const categoryOptions = transactionsData
-        .filter((category) => category.type !== "income")
-        .map((filterCategory) => ({
-          id: filterCategory.id,
-          value: filterCategory.category,
-          lable: filterCategory.category,
-        }));
-
-      const uniqueCategories = categoryOptions.filter(
-        (item, index, self) =>
-          self.findIndex((prevItem) => prevItem.value === item.value) === index
-      );
-      this.setState({ categories: uniqueCategories }); */
     });
   }
 
@@ -124,22 +50,6 @@ class Expenses extends Component {
     if (this.unsubscribe) this.unsubscribe();
     if (this.unsubscribeCategories) this.unsubscribeCategories();
   }
-
-  /*   showModal = () => {
-    this.setState({ isModalOpen: true });
-  };
-
-  handleOk = () => {
-    this.setState({ isModalOpen: false });
-  };
-
-  handleCancel = () => {
-    this.setState({ isModalOpen: false });
-  };
-
-  closeModalOnSubmit = () => {
-    this.setState({ isModalOpen: false });
-  }; */
 
   toggleModal = (isOpen) => {
     this.setState({ isModalOpen: isOpen });

@@ -16,65 +16,6 @@ class TransactionsList extends Component {
     };
   }
 
-  // componentDidMount() {
-  //   const incomesCollection = collection(db, "incomes");
-  //   this.incomesUnsubscribe = onSnapshot(incomesCollection, (snapshot) => {
-  //     const incomesData = snapshot.docs.map((doc) => ({
-  //       id: doc.id,
-  //       type: "Income",
-  //       ...doc.data(),
-  //     }));
-  //     this.setState(
-  //       (prevState) => ({
-  //         transactions: [...prevState.transactions, ...incomesData],
-  //         allTransactions: [...prevState.transactions, ...incomesData],
-  //       }),
-  //       this.updateCategories
-  //     );
-  //   });
-
-  //   const expensesCollection = collection(db, "expenses");
-  //   this.expensesUnsubscribe = onSnapshot(expensesCollection, (snapshot) => {
-  //     const expensesData = snapshot.docs.map((doc) => ({
-  //       id: doc.id,
-  //       type: "Expense",
-  //       ...doc.data(),
-  //     }));
-  //     this.setState(
-  //       (prevState) => ({
-  //         transactions: [...prevState.transactions, ...expensesData],
-  //         allTransactions: [...prevState.transactions, ...expensesData],
-  //       }),
-  //       this.updateCategories
-  //     );
-  //   });
-  // }
-
-  // componentWillUnmount() {
-  //   if (this.incomesUnsubscribe) this.incomesUnsubscribe();
-  //   if (this.expensesUnsubscribe) this.expensesUnsubscribe();
-  // }
-
-  // updateCategories = () => {
-  //   const uniqueCategories = this.state.allTransactions
-  //     .map((item) => item.category)
-  //     .filter((value, index, self) => self.indexOf(value) === index)
-  //     .map((category) => ({ value: category, label: category }));
-  //   this.setState({ categories: uniqueCategories });
-  // };
-
-  // handleCategoryChange = (value) => {
-  //   this.setState({ selectedCategory: value });
-  //   if (value) {
-  //     const filteredTransactions = this.state.allTransactions.filter(
-  //       (item) => item.category === value
-  //     );
-  //     this.setState({ transactions: filteredTransactions });
-  //   } else {
-  //     this.setState({ transactions: this.state.allTransactions });
-  //   }
-  // };
-
   componentDidMount() {
     const transactionsCollection = collection(db, "transactions");
     this.incomesUnsubscribe = onSnapshot(transactionsCollection, (snapshot) => {
@@ -90,22 +31,6 @@ class TransactionsList extends Component {
         this.updateCategories
       );
     });
-
-    // const expensesCollection = collection(db, "expenses");
-    // this.expensesUnsubscribe = onSnapshot(expensesCollection, (snapshot) => {
-    //   const expensesData = snapshot.docs.map((doc) => ({
-    //     id: doc.id,
-    //     type: "Expense",
-    //     ...doc.data(),
-    //   }));
-    //   this.setState(
-    //     (prevState) => ({
-    //       transactions: [...prevState.transactions, ...expensesData],
-    //       allTransactions: [...prevState.transactions, ...expensesData],
-    //     }),
-    //     this.updateCategories
-    //   );
-    // });
   }
 
   componentWillUnmount() {
