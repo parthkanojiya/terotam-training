@@ -1,0 +1,749 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Space Grotesk", sans-serif;
+}
+
+/********** Global Classes **********/
+
+ul,
+li {
+  text-decoration: none;
+  list-style: none;
+}
+
+.container {
+  width: 1240px;
+  margin: auto;
+}
+
+.flex {
+  display: flex;
+}
+
+.item-center {
+  align-items: center;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.gap-4 {
+  gap: 1rem;
+}
+
+.gap-8 {
+  gap: 2rem;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.text-decoration-none {
+  text-decoration: none;
+}
+
+.flex-wrap {
+  flex-wrap: wrap;
+}
+
+/********** Header ***********/
+header {
+  padding-top: 2rem;
+}
+
+.menu {
+  gap: 2rem;
+  font-size: 19px;
+  font-weight: 500;
+}
+
+.menu li {
+  cursor: pointer;
+}
+
+.logo {
+  font-size: 30px;
+  font-weight: 900;
+  margin-left: 8px;
+  text-decoration: none;
+  color: #191a23;
+}
+
+.cta {
+  border-radius: 14px;
+  font-size: 20px;
+  background: none;
+  width: 230px;
+  height: 65px;
+}
+
+.hamburger {
+  display: none;
+}
+
+/*********** Hero Section ***********/
+
+.hero-section {
+  gap: 4rem;
+  margin-top: 5rem;
+}
+
+h1 {
+  font-size: 62px;
+  font-weight: 600;
+}
+
+.hero-detail {
+  font-size: 20px;
+  margin: 1rem 0;
+  width: 85%;
+}
+
+.hero-btn {
+  width: 250px;
+  height: 68px;
+  background: #191a23;
+  color: white;
+  border-radius: 14px;
+  font-size: 19px;
+}
+
+/*********** Company Logos ***********/
+
+.company-logos {
+  padding: 4rem 0;
+}
+
+.company-logo-wrapper {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  justify-content: space-between;
+}
+
+/*********** Services  Section***********/
+
+.services-heading {
+  font-size: 40px;
+  font-weight: 800;
+  background: #b9ff66;
+  padding: 0px 10px;
+  border-radius: 8px;
+}
+
+.services-cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+}
+
+.services-head-wrapper {
+  gap: 2rem;
+  margin: 3rem 0;
+}
+
+.services-para {
+  width: 42%;
+}
+
+.card {
+  background-color: #f3f3f3;
+  gap: 1rem;
+  border-radius: 45px;
+  padding: 2rem;
+  border: 1px solid black;
+  justify-content: space-between;
+  width: 600px;
+  height: 300px;
+  box-shadow: 0 5px 0px 0px #191a23;
+}
+
+.card-content {
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.card-heading {
+  font-size: 30px;
+  font-weight: bold;
+  line-height: 1.5;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+.card-heading > span {
+  background: #b9ff66;
+  border-radius: 10px;
+  padding: 5px 8px;
+}
+
+.card-btn {
+  background: no-repeat;
+  outline: none;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.card-img {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-btn-img {
+  width: 41px;
+  height: 41px;
+  border-radius: 50%;
+  background: #191a23;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.card-green {
+  background: #b9ff66;
+}
+
+.card-green > .card-content > .card-heading > span {
+  background: #f3f3f3 !important;
+}
+
+.card-black {
+  background: #191a23;
+}
+
+.card-black > .card-content > .card-heading > span {
+  background: #f3f3f3;
+}
+
+.card-black > .card-content > .card-btn {
+  color: #f3f3f3 !important;
+}
+
+.last-card {
+  background: #b9ff66 !important;
+}
+
+.last-card-btn {
+  background: #f3f3f3;
+}
+
+.cta-section {
+  margin: 6rem 0;
+}
+
+.cta-wrapper {
+  background: #f3f3f3;
+  border-radius: 45px;
+  height: 347px;
+  padding: 2.5rem;
+}
+
+.cta-content > h3 {
+  font-size: 30px;
+  font-weight: bold;
+}
+
+.cta-content > p {
+  padding: 1rem 0;
+  width: 80%;
+}
+
+.cta-img {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+/*********** Case Studies Section ***********/
+
+.case-studies-block {
+  background: #191a23;
+  padding: 3rem 2.5rem;
+  border-radius: 45px;
+}
+
+.block {
+  position: relative;
+  width: 300px;
+}
+
+.block > p {
+  color: #f3f3f3;
+  font-size: 19px;
+}
+
+.block > button {
+  color: #b9ff66;
+  margin-top: 2rem;
+}
+
+.block-first::after,
+.block-second::after {
+  content: "";
+  width: 1px;
+  height: 100%;
+  color: #f3f3f3;
+  background-color: #f3f3f3;
+  position: absolute;
+  top: 0;
+  right: -66px;
+}
+
+/*********** Process Block Section ***********/
+
+.process-card {
+  width: 100%;
+  background: #f3f3f3;
+  padding: 1.5rem 2.5rem;
+  border-radius: 45px;
+  margin-bottom: 1.5rem;
+  border: 1px solid #191a23;
+  box-shadow: 0 5px 0px 0px #191a23;
+}
+
+.process-card > div > span {
+  font-size: 60px;
+  font-weight: bold;
+}
+
+.process-card > div > h3 {
+  font-size: 22px;
+  font-weight: 500;
+}
+
+.process-card > button {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 1px solid #191a23;
+  font-size: 50px;
+  font-weight: 900;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/*********** Team Section ***********/
+
+.team-section {
+  padding-top: 2rem;
+}
+
+.team-cards-wrapper {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  align-items: center;
+  gap: 2rem;
+}
+
+.team-card {
+  width: 387px;
+  height: 331px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 2.5rem;
+  border: 1px solid #191a23;
+  border-radius: 45px;
+  box-shadow: 0 5px 0px 0px #191a23;
+}
+
+.team-profile {
+  display: flex;
+  align-items: flex-end;
+  gap: 2rem;
+  position: relative;
+}
+
+.team-profile::after {
+  content: "";
+  width: 100%;
+  height: 1px;
+  color: #191a23;
+  background-color: #191a23;
+  position: absolute;
+  bottom: -42px;
+}
+
+.team-linkedin {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.all-team-btn {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/*********** Footer ***********/
+
+footer {
+  margin-top: 4rem;
+}
+
+.footer-wrapper {
+  background: #191a23;
+  padding: 2.5rem;
+  border-radius: 60px 60px 0 0;
+}
+
+.footer-logo {
+  font-size: 30px;
+  font-weight: 900;
+  margin-left: 8px;
+  text-decoration: none;
+  color: #f3f3f3;
+}
+
+.footer-menu-item > li {
+  color: #f3f3f3;
+  text-decoration: underline;
+}
+
+.footer-contact {
+  margin-top: 2rem;
+  position: relative;
+}
+
+.footer-contact::after {
+  content: "";
+  width: 100%;
+  height: 1px;
+  color: #f3f3f3;
+  background-color: #f3f3f3;
+  position: absolute;
+  bottom: -28px;
+}
+
+.footer-contact-us {
+  color: #f3f3f3;
+}
+
+.footer-form {
+  background-color: #292a32;
+  padding: 2.5rem;
+  border-radius: 14px;
+  width: 634px;
+}
+
+.footer-form > input {
+  padding: 1.3rem 1rem;
+  border-radius: 14px;
+  border: 1px solid #f3f3f3;
+  background: none;
+  width: 268px;
+}
+
+.footer-form > input::placeholder {
+  color: #f3f3f3;
+  font-size: 16px;
+}
+
+.footer-form > button {
+  padding: 1.3rem 1rem;
+  background: #b9ff66;
+  border-radius: 14px;
+  width: 268px;
+  font-size: 19px;
+  font-weight: 500;
+}
+
+.copyright {
+  padding-top: 3rem;
+}
+
+.copyright > p {
+  color: #f3f3f3;
+}
+
+/********** Media Queries (max-width: 768px) ***********/
+
+@media screen and (max-width: 768px) {
+  .container {
+    padding: 0.5rem;
+    width: 100%;
+  }
+
+  .nav-menu {
+    display: none;
+  }
+
+  .hamburger {
+    display: block;
+  }
+
+  h1 {
+    font-size: 38px;
+  }
+
+  .hero-section {
+    flex-direction: column;
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+
+  .hero-img > img {
+    width: 90%;
+  }
+
+  .company-logo-wrapper {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .services-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .cta-wrapper {
+    margin: 0.5rem;
+  }
+
+  .block-first::after,
+  .block-second::after {
+    content: "";
+    width: 0;
+  }
+
+  .case-studies-block {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .team-cards-wrapper {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+
+  .team-card {
+    width: 365px;
+  }
+}
+
+/********** Media Queries (max-width: 480px) ***********/
+
+@media screen and (max-width: 480px) {
+  .nav-menu {
+    display: none;
+  }
+
+  .hamburger {
+    display: block;
+  }
+
+  .container {
+    padding: 0.5rem;
+    width: 100%;
+  }
+
+  /* Hero Section */
+
+  .hero-section {
+    position: relative;
+    flex-direction: column-reverse;
+    margin-top: 2rem;
+    gap: 0;
+  }
+
+  h1 {
+    position: absolute;
+    top: 0;
+    font-size: 40px;
+  }
+
+  .hero-img {
+    margin-top: 8rem;
+  }
+
+  .hero-img > img {
+    width: 100%;
+  }
+
+  .hero-btn {
+    width: 100%;
+  }
+
+  .hero-detail {
+    font-size: 18px;
+    width: 100%;
+  }
+
+  /* Company Logos */
+  .company-logo-wrapper {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+
+  .each-logo {
+    display: flex;
+    justify-content: center;
+  }
+
+  /* Services */
+  .services-head-wrapper {
+    flex-direction: column;
+  }
+
+  .services-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .services-para {
+    width: 100%;
+  }
+
+  .services-head-wrapper {
+    margin: 2rem 0;
+    text-align: center;
+  }
+
+  .services-heading {
+    width: auto;
+    font-size: 24px;
+  }
+
+  .case-studies-block {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .card {
+    width: 360px;
+  }
+
+  .card-btn {
+    font-size: 0;
+  }
+
+  .card-heading {
+    font-size: 18px;
+  }
+
+  .card-img > img {
+    width: 100%;
+  }
+
+  /* Team cards */
+
+  .team-cards-wrapper {
+    grid-template-columns: 1fr;
+  }
+
+  /* cta */
+  .cta-section {
+    margin: 2rem 0;
+    padding: 0.5rem;
+  }
+
+  .cta-img {
+    display: none;
+  }
+
+  .cta-wrapper {
+    padding: 2.5rem 2.5rem !important;
+  }
+
+  /* Block */
+  .case-studies-block {
+    flex-direction: column;
+    margin-top: 2rem;
+  }
+
+  .block {
+    background: #191a23;
+  }
+
+  /* Working Process */
+  .process-card > div > span {
+    font-size: 38px;
+  }
+
+  .process-card > button {
+    width: 40px;
+    height: 40px;
+    font-size: 40px;
+    font-weight: 600;
+  }
+
+  .process-card {
+    padding: 1rem;
+    flex-wrap: nowrap;
+  }
+
+  .process-card > div > h3 {
+    font-size: 18px;
+    width: 60%;
+  }
+
+  /* Team card */
+
+  .team-card {
+    width: 100%;
+  }
+
+  /* Footer */
+  .footer-menu {
+    flex-direction: column;
+    gap: 2rem;
+    padding: 3rem;
+  }
+
+  ul.footer-menu-item {
+    flex-direction: column;
+  }
+
+  .footer-wrapper {
+    border-radius: 0;
+  }
+
+  .footer-contact {
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .footer-social {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .footer-contact-us {
+    text-align: center;
+  }
+
+  .footer-contact-us > p {
+    margin-bottom: 1rem;
+  }
+
+  .footer-form {
+    width: 100%;
+    flex-direction: column;
+    padding: 2.5rem 1rem;
+  }
+
+  .footer-form > input,
+  .footer-form > button {
+    width: 100%;
+  }
+
+  .copyright {
+    padding-top: 4rem;
+    padding-bottom: 2rem;
+    justify-content: center;
+  }
+}
