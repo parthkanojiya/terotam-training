@@ -1,0 +1,69 @@
+@import "../../variables.less";
+
+.hero-section {
+  background: @hero-gradient;
+  width: 100%;
+  min-width: 710px;
+
+  .hero-wrapper {
+    padding: 3rem 0;
+
+    .hero-content {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 2rem;
+
+      h1 {
+        font-size: 100px;
+        font-weight: 900;
+        line-height: 1.2;
+        letter-spacing: -3px;
+      }
+
+      .hero-description {
+        font-size: 22px;
+        line-height: 1.5;
+      }
+    }
+
+    .hero-img {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      position: relative;
+
+      .cylinder {
+        grid-area: 3 / 1 / 4 / 2;
+        width: 180px;
+        position: absolute;
+        top: -3rem;
+        left: -3rem;
+      }
+
+      .visual {
+        grid-area: 4 / 2 / 5 / 3;
+        width: 550px;
+        animation: bounce 3s infinite;
+      }
+
+      @keyframes bounce {
+        0% {
+          transform: translateY(-10px);
+        }
+        100% {
+          transform: translateY(10px);
+        }
+      }
+
+      .halfTorus {
+        grid-area: 5 / 4 / 6 / 5;
+        width: 180px;
+        position: absolute;
+        bottom: -10rem;
+        right: 0;
+        z-index: 99;
+      }
+    }
+  }
+}
