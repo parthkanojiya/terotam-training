@@ -1,0 +1,54 @@
+.creative-future-section {
+  background-color: white;
+}
+
+.creative-future-wrapper {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  justify-content: space-between;
+  padding: 3rem 0;
+}
+
+.creative-future-img > img {
+  width: 500px;
+}
+
+.creative-future-content > h2 {
+  font-weight: bold;
+  font-size: 60px;
+  letter-spacing: -2px;
+}
+
+.creative-future-content > p {
+  font-size: 18px;
+  padding: 1.5rem 0;
+  line-height: 1.8;
+}
+
+.creative-future-features {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  row-gap: 6rem;
+}
+
+.creative-future-features > span {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-weight: 600;
+  font-size: 19px;
+}
+
+.users {
+  padding: 6rem 0;
+}
+
+.users > h3 {
+  font-size: 48px;
+  font-weight: 500;
+  text-align: center;
+}
+
+.users > h3 > b {
+  font-weight: bold;
+}

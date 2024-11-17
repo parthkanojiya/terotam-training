@@ -1,0 +1,20 @@
+.headset-section {
+  background: white;
+  padding: 5rem 0px;
+}
+
+.header-wrapper {
+  gap: 12rem;
+}
+
+.headset-content,
+.headset-img {
+  width: 50%;
+}
+
+.headset-content > h2 {
+  font-size: 64px;
+  font-weight: bold;
+  line-height: 1.2;
+  overflow: hidden;
+}

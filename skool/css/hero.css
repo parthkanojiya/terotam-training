@@ -1,0 +1,54 @@
+.hero-section {
+  background: url("./assets/hero-pattern-desktop.svg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: 100% 15%;
+}
+
+.hero-wrapper {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding: 4rem 0 0 0;
+}
+
+h1 {
+  font-size: 75px;
+  font-weight: 900;
+  letter-spacing: -1px;
+}
+
+.hero-content {
+  width: 110%;
+}
+
+.hero-content > p {
+  padding: 2rem 0;
+  font-size: 19px;
+  line-height: 1.8;
+}
+
+.cta-skyblue {
+  background: white;
+  position: relative;
+  color: black;
+  font-weight: bold;
+  padding: 16px 46px;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.cta-skyblue::before {
+  content: "";
+  background: #00d1ff;
+  border: 1px solid #010101;
+  top: 5px;
+  left: -6px;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  z-index: -99;
+}
+
+.hero-img > img {
+  float: right;
+}

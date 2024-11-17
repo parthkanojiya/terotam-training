@@ -1,0 +1,50 @@
+.virtual-tours {
+  padding: 4rem 0;
+  background: white;
+}
+.virtual-tours-wrapper {
+  padding: 2rem 0;
+  background: linear-gradient(99.58deg, #00d1ff 0%, #001aff 99.46%);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 2rem;
+  height: 500px;
+}
+
+.virtual-tours-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1.2rem;
+  margin-top: 2rem;
+}
+
+.virtual-tours-content > h2 {
+  font-size: 50px;
+  color: white;
+  font-weight: bold;
+}
+
+.virtual-tours-content > p {
+  font-size: 18px;
+  line-height: 1.5;
+  color: white;
+  width: 72%;
+}
+
+.virtual-tours-content > button {
+  margin-top: 2rem;
+}
+
+.virtual-tours-img {
+  width: 100%;
+  height: 100%;
+}
+
+.virtual-tours-img {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}

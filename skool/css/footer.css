@@ -1,0 +1,39 @@
+footer {
+  background-color: white;
+}
+
+.footer-wrapper {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  align-items: center;
+  justify-items: end;
+  gap: 1rem;
+  padding: 4rem 0;
+  border-bottom: 1px solid black;
+}
+
+.about > p {
+  font-size: 20px;
+  margin-top: 1rem;
+}
+
+.ftr-headings {
+  font-weight: bold;
+}
+
+.ftr-lists {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1rem;
+  font-size: 16px;
+}
+
+.copyright {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  padding: 4rem 0;
+  font-size: 20px;
+}

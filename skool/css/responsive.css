@@ -1,0 +1,383 @@
+@media (max-width: 768px) {
+  .container {
+    padding: 0 0.5rem;
+  }
+
+  /********** Header Section ***********/
+
+  .nav-btn {
+    display: none;
+  }
+
+  /********** Hero Section ***********/
+
+  .hero-wrapper {
+    margin-top: 2rem;
+  }
+
+  h1 {
+    font-size: 40px;
+  }
+
+  .hero-img > img {
+    width: 100%;
+  }
+
+  .hero-content > p {
+    font-size: 14px;
+  }
+
+  /********** Headset Section ***********/
+  .headset-img > img {
+    width: 350px;
+  }
+
+  .headset-content > h2 {
+    font-size: 36px;
+    letter-spacing: -1px;
+  }
+
+  /********** Classroom Section ***********/
+
+  .classroom-wrapper {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    margin: 2rem 0;
+  }
+
+  .classroom-cards {
+    justify-items: center;
+    gap: 1rem;
+  }
+
+  /********** Subject Section ***********/
+
+  .subject-cards {
+    overflow-x: scroll;
+  }
+
+  .subjects-section {
+    padding: 2rem 0;
+  }
+
+  .subject-heading {
+    font-size: 38px;
+    font-weight: bold;
+  }
+
+  /********** Virtual Section ***********/
+
+  .virtual-tours-img > img {
+    width: auto;
+  }
+
+  .virtual-tours-wrapper {
+    height: 400px;
+  }
+
+  .virtual-tours-content,
+  .virtual-tours-img {
+    width: 50%;
+    flex: 1;
+  }
+
+  .virtual-tours-content > h2 {
+    font-size: 40px;
+  }
+
+  .virtual-tours-content > p {
+    font-size: 16px;
+    width: 100%;
+  }
+
+  /********** Creative Section ***********/
+
+  .creative-future-img > img {
+    width: 350px;
+  }
+
+  .creative-future-content > h2 {
+    font-size: 32px;
+    letter-spacing: -1px;
+  }
+
+  .creative-future-content > p {
+    font-size: 16px;
+    line-height: 1.4;
+  }
+
+  .creative-future-features > span {
+    font-size: 16px;
+  }
+
+  .creative-future-features {
+    row-gap: 3rem;
+  }
+
+  .users > h3 {
+    font-size: 28px;
+  }
+
+  .users {
+    padding: 3rem 0;
+  }
+
+  /********** Logo Section ***********/
+  .logos-wrapper {
+    height: 200px;
+  }
+
+  /********** Subscribe Section ***********/
+
+  .subscribe-wrapper {
+    place-items: center;
+    height: 200px;
+  }
+
+  .subscribe-heading > h2 {
+    font-size: 40px;
+  }
+
+  .form-wrapper > input,
+  .form-wrapper > button {
+    width: 100%;
+  }
+
+  /********** Footer Section ***********/
+
+  footer {
+    height: 700px;
+  }
+
+  .ftr-lists {
+    list-style: none;
+  }
+
+  .about > p {
+    font-size: 16px;
+  }
+
+  .footer-wrapper {
+    height: 200px;
+    gap: 0;
+  }
+
+  .copyright {
+    height: 100px;
+  }
+
+  .copyright > p {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Header Section */
+  .header-wrapper {
+    gap: 1rem;
+    flex-direction: column;
+  }
+
+  /* Hero Section  */
+
+  .hero-content {
+    width: 100%;
+    text-align: center;
+  }
+
+  .hero-wrapper {
+    grid-template-columns: 1fr;
+  }
+
+  h1 {
+    font-size: 32px;
+  }
+
+  .hero-content > p {
+    font-size: 16px;
+    line-height: 1.5;
+  }
+
+  /* Headser Section */
+  .headset-wrapper {
+    flex-direction: column;
+  }
+
+  .headset-content,
+  .headset-img {
+    width: 100%;
+  }
+
+  .headset-content,
+  .headset-img {
+    width: 100%;
+    text-align: center;
+  }
+
+  .headset-content > h2 {
+    font-size: 32px;
+  }
+
+  /* Classroom Section */
+  .classroom-content {
+    width: 100%;
+  }
+
+  .classroom-card-content h3 {
+    font-size: 16px;
+  }
+
+  .classroom-content > p {
+    font-size: 16px;
+    width: 100%;
+  }
+
+  .classroom-card {
+    width: 170px;
+    padding: 0.5rem;
+  }
+
+  .classroom-card-img {
+    width: 100px;
+    height: 100px;
+  }
+
+  .classroom-card-content {
+    margin-top: 1rem;
+    gap: 0.5rem;
+  }
+
+  .classroom-card-content p {
+    font-size: 13px;
+  }
+
+  /* Subject Section */
+
+  .subject-heading {
+    font-size: 28px;
+  }
+
+  /* Virtual Section */
+
+  .virtual-tours-wrapper {
+    flex-direction: column;
+  }
+
+  .virtual-tours-content,
+  .virtual-tours-img {
+    flex: 1;
+    position: relative;
+  }
+
+  .virtual-tours-content > h2 {
+    font-size: 24px;
+  }
+
+  .virtual-tours-content,
+  .virtual-tours-img {
+    width: 100%;
+  }
+
+  .virtual-tours-img > img {
+    width: 400px;
+    height: 190px;
+  }
+
+  /* Creative Future Section */
+
+  .creative-future-img > img {
+    width: 250px;
+  }
+
+  .creative-future-wrapper {
+    grid-template-columns: 1fr;
+    place-items: center;
+    gap: 2rem;
+  }
+
+  .creative-future-content {
+    text-align: center;
+  }
+
+  .creative-future-content > h2 {
+    font-size: 30px;
+  }
+
+  .creative-future-content > p {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .creative-future-features {
+    row-gap: 1rem;
+    place-items: flex-start;
+  }
+
+  .creative-future-features > span {
+    text-align: left;
+  }
+
+  .users > h3 {
+    font-size: 18px;
+  }
+
+  /* Logo Section */
+
+  .logos-section {
+    padding: 1rem 0;
+  }
+
+  .logos-wrapper {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* Subscribe Section */
+
+  .subscribe-wrapper {
+    grid-template-columns: 1fr;
+    height: auto;
+    gap: 1rem;
+    place-content: center;
+  }
+
+  .subscribe-heading > h2 {
+    font-size: 26px;
+    text-align: center;
+    letter-spacing: 0;
+  }
+
+  .form-wrapper {
+    display: flex;
+  }
+
+  .form-wrapper > input,
+  .form-wrapper > button {
+    width: 100%;
+  }
+
+  .subscribe-wrapper {
+    place-items: center;
+    height: 200px;
+  }
+
+  .subscribe-section {
+    padding-bottom: 0;
+  }
+
+  /* Footer Section */
+  .footer-wrapper {
+    height: auto;
+    gap: 1rem;
+    grid-template-columns: 1fr;
+    justify-items: flex-start;
+    padding: 2rem 0.5rem;
+  }
+
+  .copyright {
+    height: auto;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem 0.5rem 3rem 0.5rem;
+    align-items: flex-start;
+  }
+}

@@ -1,0 +1,91 @@
+.classroom-wrapper {
+  padding: 3rem 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  justify-content: space-between;
+}
+
+.classroom-content {
+  width: 60%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.5rem;
+}
+
+.classroom-content > h2 {
+  font-weight: bold;
+  font-size: 48px;
+  letter-spacing: -2px;
+}
+
+.classroom-content > p {
+  font-size: 20px;
+  width: 82%;
+  line-height: 1.5;
+}
+
+.classroom-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  justify-content: space-between;
+  gap: 5rem;
+}
+
+.classroom-card {
+  background: linear-gradient(
+    322.09deg,
+    #b7f2ff 0%,
+    rgba(253, 246, 235, 0) 140.54%,
+    rgba(99, 227, 255, 0) 140.54%
+  );
+  backdrop-filter: blur(1.40291px);
+  width: 280px;
+  text-align: center;
+  padding: 1rem;
+}
+
+.classroom-card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  margin-top: 2rem;
+}
+
+.classroom-card-content h3 {
+  font-weight: bold;
+}
+
+.classroom-card-content p {
+  font-size: 14px;
+  line-height: 1.5;
+  color: gray;
+  font-weight: 500;
+}
+
+.classroom-card-img {
+  width: 182px;
+  height: 182px;
+}
+
+.cta-btn {
+  background: white;
+  position: relative;
+  color: black;
+  font-weight: bold;
+  padding: 16px 46px;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.cta-btn::before {
+  content: "";
+  background: #00d1ff;
+  border: 1px solid #010101;
+  top: 5px;
+  left: -6px;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  z-index: -99;
+}
