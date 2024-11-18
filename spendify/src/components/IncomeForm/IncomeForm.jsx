@@ -22,6 +22,7 @@ import {
   Space,
   TreeSelect,
   Segmented,
+  message,
 } from "antd";
 import dayjs from "dayjs";
 
@@ -81,10 +82,10 @@ class IncomeForm extends Component {
 
     try {
       await addDoc(collection(db, "transactions"), data);
+      message.success("Income Added Successfully!");
     } catch (error) {
       console.error("Error adding document to Firestore: ", error);
     }
-
     this.formRef.current.resetFields();
   };
 
@@ -107,7 +108,7 @@ class IncomeForm extends Component {
     return (
       <Form
         {...layout}
-        // ref={this.formRef}
+        ref={this.formRef}
         name="basic"
         labelCol={{
           span: 6,

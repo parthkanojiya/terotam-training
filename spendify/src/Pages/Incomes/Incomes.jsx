@@ -1,5 +1,14 @@
 import React, { Component } from "react";
-import { Button, Modal, Select, Space, Table, Tag } from "antd";
+import {
+  Button,
+  message,
+  Popconfirm,
+  Modal,
+  Select,
+  Space,
+  Table,
+  Tag,
+} from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import "../../global.less";
 import "./style.less";
@@ -13,6 +22,9 @@ import {
   where,
   doc,
   deleteDoc,
+  QuerySnapshot,
+  writeBatch,
+  getDoc,
 } from "firebase/firestore";
 import { db } from "../../firebase";
 
@@ -38,8 +50,10 @@ class Incomes extends Component {
     this.unsubscribeIncomes = onSnapshot(incomeQuery, (snapshot) => {
       const transactionsData = snapshot.docs.map((doc) => ({
         id: doc.id,
+        transactionDocId: doc.id,
         ...doc.data(),
       }));
+
       this.setState({
         incomes: transactionsData,
         allIncomes: transactionsData,
@@ -88,18 +102,24 @@ class Incomes extends Component {
     try {
       const incomeDocRef = doc(db, "transactions", id);
       await deleteDoc(incomeDocRef);
-
       this.setState((prevState) => ({
         incomes: prevState.incomes.filter((income) => income.id !== id),
         allIncomes: prevState.allIncomes.filter((income) => income.id !== id),
       }));
+      message.success("Item Deleted Successfully");
     } catch (error) {
       console.error("Error deleting income:", error.message);
     }
   };
 
   render() {
-    const { isModalOpen, incomes, categories, selectedCategory } = this.state;
+    const {
+      isModalOpen,
+      isDeleteModalOpen,
+      incomes,
+      categories,
+      selectedCategory,
+    } = this.state;
 
     const columns = [
       {
@@ -135,14 +155,21 @@ class Incomes extends Component {
           return (
             <>
               <EditOutlined style={{ fontSize: "16px", cursor: "pointer" }} />
-              <DeleteOutlined
-                style={{
-                  fontSize: "16px",
-                  cursor: "pointer",
-                  marginLeft: "10px",
-                }}
-                onClick={() => this.deleteIncome(record.id)}
-              />
+              <Popconfirm
+                title="Delete the task"
+                description="Are you sure to delete this item?"
+                onConfirm={() => this.deleteIncome(record.transactionDocId)}
+                okText="Yes"
+                cancelText="No"
+              >
+                <DeleteOutlined
+                  style={{
+                    fontSize: "16px",
+                    cursor: "pointer",
+                    marginLeft: "10px",
+                  }}
+                />
+              </Popconfirm>
             </>
           );
         },
@@ -185,6 +212,7 @@ class Incomes extends Component {
             </div>
           </div>
 
+          {/* Income Modal */}
           <Modal
             title="Add Income"
             footer={false}
