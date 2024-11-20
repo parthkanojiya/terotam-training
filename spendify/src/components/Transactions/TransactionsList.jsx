@@ -66,6 +66,8 @@ class TransactionsList extends Component {
         key: "name",
         title: "Name",
         dataIndex: "name",
+        sorter: (a, b) => a.name.length - b.name.length,
+        sortDirections: ["descend", "ascend"],
       },
       {
         key: "type",
@@ -76,16 +78,25 @@ class TransactionsList extends Component {
         key: "category",
         title: "Category",
         dataIndex: "category",
+        filters: categories.map((cat) => ({
+          text: cat.value,
+          value: cat.value,
+        })),
+        onFilter: (value, record) => record.category === value,
       },
       {
         key: "date",
         title: "Date",
         dataIndex: "date",
+        sorter: (a, b) => a.date.localeCompare(b.date),
+        sortDirections: ["descend", "ascend"],
       },
       {
         key: "amount",
         title: "Amount",
         dataIndex: "amount",
+        sorter: (a, b) => a.amount - b.amount,
+        sortDirections: ["descend", "ascend"],
       },
     ];
 
@@ -94,26 +105,7 @@ class TransactionsList extends Component {
         <div className="transaction-wrapper">
           <div className="transactions-heading flex justify-between item-center">
             <h3>Transactions</h3>
-            <ul className="flex justify-between item-center gap-2">
-              <li>
-                <button disabled>No Sort</button>
-              </li>
-              <li>
-                <button disabled>Sort by Date</button>
-              </li>
-              <li>
-                <button disabled>Sort by Amount</button>
-              </li>
-              <Space wrap>
-                <Select
-                  value={selectedCategory || null}
-                  onChange={this.handleCategoryChange}
-                  allowClear
-                  placeholder="Select category"
-                  options={categories}
-                />
-              </Space>
-            </ul>
+
             <div className="flex justify-between item-center gap-4">
               <button className="export-csv" disabled title="Export to CSV">
                 Export to CSV

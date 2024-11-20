@@ -1,12 +1,14 @@
-import React, { Component } from "react";
-import "./style.less";
+import React, { Component, createRef } from "react";
 import "../../global.less";
+import "./style.less";
 import {
   collection,
   addDoc,
   onSnapshot,
   query,
   where,
+  updateDoc,
+  doc,
 } from "firebase/firestore";
 import { db } from "../../firebase";
 import {
@@ -22,29 +24,26 @@ import {
   Space,
   TreeSelect,
   Segmented,
+  message,
 } from "antd";
 import dayjs from "dayjs";
 
 const dateFormat = "YYYY/MM/DD";
 
-class ExpenseForm extends Component {
+class EditExpenseForm extends Component {
   constructor(props) {
     super(props);
 
+    this.formRef = createRef();
+
     this.state = {
-      expenseDatas: [],
       categories: [],
-      selectedCategory: "",
-      // id: crypto.randomUUID(),
-      // name: "",
-      // amount: "",
-      // type: "expense",
-      // date: new Date().toISOString().slice(0, 10),
-      // expenses: [],
+      name: props.expenseData?.name || "",
+      category: props.expenseData?.category || "",
+      amount: props.expenseData?.amount || "",
+      date: props.expenseData?.date || "",
     };
   }
-
-  formRef = React.createRef();
 
   componentDidMount() {
     const categoriesCollection = collection(db, "categories");
@@ -52,44 +51,64 @@ class ExpenseForm extends Component {
       categoriesCollection,
       (snapshot) => {
         const categoriesData = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
+          value: doc.data.name,
+          lable: doc.data.name,
         }));
-
-        const categoryOptions = categoriesData.map((category) => ({
-          value: category.name,
-          label: category.name,
-        }));
-        this.setState({ categories: categoryOptions });
+        this.setState({ categories: categoriesData });
       }
     );
+
+    this.setInitialFormValues();
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.expenseData !== this.props.expenseData) {
+      this.setInitialFormValues();
+    }
   }
 
   componentWillUnmount() {
-    if (this.unsubscribe) this.unsubscribe();
     if (this.unsubscribeCategories) this.unsubscribeCategories();
   }
 
+  setInitialFormValues = () => {
+    const { expenseData } = this.props;
+
+    const initialValues = {
+      name: expenseData?.name || "",
+      amount: expenseData?.amount || "",
+      category: expenseData?.category || "",
+      date: expenseData?.data ? dayjs(expenseData.date, dateFormat) : null,
+    };
+
+    this.formRef.current.setFieldsValue(initialValues);
+  };
+
   onFinish = async (values) => {
+    const { expenseData, closeModalOnSubmit } = this.props;
+
     const formattedValues = {
       ...values,
-      id: crypto.randomUUID(),
       date: values.date ? dayjs(values.date).format(dateFormat) : null,
     };
 
-    const { id, name, amount, type, category, date } = formattedValues;
-    const data = { id, name, amount, type, category, date };
-    localStorage.setItem("transactions", JSON.stringify(data));
-
     try {
-      await addDoc(collection(db, "transactions"), data);
-      const { closeModalOnSubmit } = this.props;
-      if (closeModalOnSubmit) closeModalOnSubmit();
-      message.success("Expense Added Successfully!");
+      if (expenseData?.id) {
+        const docRef = doc(db, "transactions", expenseData.transactionDocId);
+        await updateDoc(docRef, formattedValues);
+        message.success("Expense updated successfully!");
+      } else {
+        const id = crypto.randomUUID();
+        const data = { ...formattedValues, id };
+        await addDoc(collection(db, "transactions"), data);
+        message.success("Expense added successfully!");
+      }
     } catch (error) {
-      console.error("Error adding document to Firestore: ", error);
+      console.error("Error updating/adding document: ", error);
+      message.error("Failed to update/add income.");
     }
     this.formRef.current.resetFields();
+    if (closeModalOnSubmit) closeModalOnSubmit();
   };
 
   onFinishFailed = (errorInfo) => {
@@ -97,34 +116,15 @@ class ExpenseForm extends Component {
   };
 
   render() {
-    const { closeModalOnSubmit } = this.props;
-
-    const layout = {
-      labelCol: {
-        span: 8,
-      },
-      wrapperCol: {
-        span: 16,
-      },
-    };
+    const { categories } = this.state;
 
     return (
       <Form
-        {...layout}
         ref={this.formRef}
-        name="basic"
-        labelCol={{
-          span: 6,
-        }}
-        wrapperCol={{
-          span: 32,
-        }}
-        style={{
-          maxWidth: 600,
-        }}
-        initialValues={{
-          remember: true,
-        }}
+        name="editExpenseForm"
+        labelCol={{ span: 6 }}
+        wrapperCol={{ span: 16 }}
+        style={{ maxWidth: 600 }}
         onFinish={this.onFinish}
         onFinishFailed={this.onFinishFailed}
         autoComplete="off"
@@ -170,7 +170,6 @@ class ExpenseForm extends Component {
           ]}
         >
           <Select
-            onChange={this.handleTypeChange}
             placeholder="Select type"
             allowClear
             options={[{ value: "expense", label: "expense" }]}
@@ -187,11 +186,9 @@ class ExpenseForm extends Component {
           ]}
         >
           <Select
-            allowClear
-            value={this.state.selectedCategory || null}
-            onChange={this.handleCategoryChange}
             placeholder="Select category"
-            options={this.state.categories}
+            allowClear
+            options={categories}
           />
         </Form.Item>
 
@@ -207,12 +204,11 @@ class ExpenseForm extends Component {
           <DatePicker format={dateFormat} />
         </Form.Item>
 
-        <Form.Item label={null}>
+        <Form.Item>
           <Button
             type="primary"
             htmlType="submit"
             style={{ marginLeft: "88px" }}
-            onClick={closeModalOnSubmit}
           >
             Submit
           </Button>
@@ -222,4 +218,4 @@ class ExpenseForm extends Component {
   }
 }
 
-export default ExpenseForm;
+export default EditExpenseForm;

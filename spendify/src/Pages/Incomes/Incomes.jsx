@@ -27,16 +27,19 @@ import {
   getDoc,
 } from "firebase/firestore";
 import { db } from "../../firebase";
+import EditIncomeForm from "../../components/IncomeForm/EditIncomeForm";
 
 class Incomes extends Component {
   constructor(props) {
     super(props);
     this.state = {
       isModalOpen: false,
+      isEditModalOpen: false,
       incomes: [],
       allIncomes: [],
       categories: [],
       selectedCategory: "",
+      selectedIncome: [],
     };
   }
 
@@ -85,6 +88,13 @@ class Incomes extends Component {
     this.setState({ isModalOpen: isOpen });
   };
 
+  toggleEditModal = (isOpen) => {
+    this.setState({
+      isEditModalOpen: isOpen,
+      selectedIncome: isOpen ? this.state.selectedIncome : null,
+    });
+  };
+
   handleCategoryChange = (value) => {
     this.setState({ selectedCategory: value });
 
@@ -112,13 +122,22 @@ class Incomes extends Component {
     }
   };
 
+  handleEdit = (data) => {
+    const { transactionDocId, name, category, date, type, amount } = data;
+    this.setState({
+      selectedIncome: { ...data },
+      isEditModalOpen: true,
+    });
+  };
+
   render() {
     const {
       isModalOpen,
-      isDeleteModalOpen,
+      isEditModalOpen,
       incomes,
       categories,
       selectedCategory,
+      selectedIncome,
     } = this.state;
 
     const columns = [
@@ -126,6 +145,8 @@ class Incomes extends Component {
         key: "name",
         title: "Name",
         dataIndex: "name",
+        sorter: (a, b) => a.name.length - b.name.length,
+        sortDirections: ["descend", "ascend"],
       },
       {
         key: "type",
@@ -136,16 +157,26 @@ class Incomes extends Component {
         key: "category",
         title: "Category",
         dataIndex: "category",
+        filters: categories.map((cat) => ({
+          text: cat.value,
+          value: cat.value,
+        })),
+        onFilter: (value, record) => record.category === value,
       },
+
       {
         key: "date",
         title: "Date",
         dataIndex: "date",
+        sorter: (a, b) => a.date.localeCompare(b.date),
+        sortDirections: ["descend", "ascend"],
       },
       {
         key: "amount",
         title: "Amount",
         dataIndex: "amount",
+        sorter: (a, b) => a.amount - b.amount,
+        sortDirections: ["descend", "ascend"],
       },
       {
         key: "action",
@@ -154,7 +185,10 @@ class Incomes extends Component {
         render: (_, record) => {
           return (
             <>
-              <EditOutlined style={{ fontSize: "16px", cursor: "pointer" }} />
+              <EditOutlined
+                style={{ fontSize: "16px", cursor: "pointer" }}
+                onClick={() => this.handleEdit(record)}
+              />
               <Popconfirm
                 title="Delete the task"
                 description="Are you sure to delete this item?"
@@ -181,27 +215,6 @@ class Incomes extends Component {
         <div className="transaction-wrapper">
           <div className="transactions-heading flex justify-between item-center">
             <h3>Incomes</h3>
-            <ul className="flex justify-between item-center gap-2">
-              <li>
-                <button disabled>No Sort</button>
-              </li>
-              <li>
-                <button disabled>Sort by Date</button>
-              </li>
-              <li>
-                <button disabled>Sort by Amount</button>
-              </li>
-              <Space wrap>
-                <Select
-                  value={selectedCategory || null}
-                  onChange={this.handleCategoryChange}
-                  allowClear
-                  placeholder="Select category"
-                  options={categories}
-                  disabled={categories.length === 0}
-                />
-              </Space>
-            </ul>
             <div className="flex justify-between item-center gap-4">
               <button
                 className="import-csv"
@@ -212,7 +225,7 @@ class Incomes extends Component {
             </div>
           </div>
 
-          {/* Income Modal */}
+          {/* Add Income Modal */}
           <Modal
             title="Add Income"
             footer={false}
@@ -222,6 +235,21 @@ class Incomes extends Component {
             style={{ maxWidth: 400 }}
           >
             <IncomeForm closeModalOnSubmit={() => this.toggleModal(false)} />
+          </Modal>
+
+          {/* Edit Income Modal */}
+          <Modal
+            title="Edit Income"
+            footer={false}
+            open={isEditModalOpen}
+            onOk={() => this.toggleEditModal(false)}
+            onCancel={() => this.toggleEditModal(false)}
+            style={{ maxWidth: 400 }}
+          >
+            <EditIncomeForm
+              incomeData={selectedIncome}
+              closeModalOnSubmit={() => this.toggleEditModal(false)}
+            />
           </Modal>
 
           <div className="table">

@@ -1,19 +1,34 @@
 import React, { Component } from "react";
-import { collection, onSnapshot } from "firebase/firestore";
+import {
+  collection,
+  addDoc,
+  getDocs,
+  onSnapshot,
+  query,
+  where,
+  doc,
+  deleteDoc,
+  QuerySnapshot,
+  writeBatch,
+  getDoc,
+} from "firebase/firestore";
 import { db } from "../../firebase";
 import CategoryForm from "../../components/CategoryForm/CategoryForm";
-import { Modal, Space, Table, Tag } from "antd";
+import { Modal, Space, Table, Tag, Empty, message, Popconfirm } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import "./style.less";
 import "../../global.less";
+import EditCategoryForm from "../../components/CategoryForm/EditCategoryForm";
 
 class Categories extends Component {
   constructor(props) {
     super(props);
     this.state = {
       isModalOpen: false,
+      isEditModalOpen: false,
       categories: [],
       isEditing: false,
+      selectedCategory: [],
     };
   }
 
@@ -22,6 +37,7 @@ class Categories extends Component {
     this.unsubscribe = onSnapshot(categoriesCollection, (snapshot) => {
       const categoriesData = snapshot.docs.map((doc) => ({
         id: doc.id,
+        categoryDocId: doc.id,
         ...doc.data(),
       }));
       this.setState({ categories: categoriesData });
@@ -29,39 +45,81 @@ class Categories extends Component {
   }
 
   componentWillUnmount() {
-    if (this.unsubscribe) {
-      this.unsubscribe();
-    }
+    if (this.unsubscribe) this.unsubscribe();
   }
 
   toggleModal = (isOpen) => {
     this.setState({ isModalOpen: isOpen });
   };
 
+  toggleEditModal = (isOpen) => {
+    this.setState({
+      isEditModalOpen: isOpen,
+      selectedCategory: isOpen ? this.state.selectedCategory : null,
+    });
+  };
+
+  deleteCategory = async (id) => {
+    try {
+      const categoryDocRef = doc(db, "categories", id);
+      await deleteDoc(categoryDocRef);
+      this.setState((prevState) => ({
+        categories: prevState.categories.filter(
+          (category) => category.id !== id
+        ),
+      }));
+      message.success("Item Deleted Successfully");
+    } catch (error) {
+      console.error("Error deleting income:", error.message);
+    }
+  };
+
+  handleEdit = (data) => {
+    const { categoryDocId, name } = data;
+    this.setState({
+      selectedCategory: { ...data },
+      isEditModalOpen: true,
+    });
+  };
+
   render() {
-    const { isModalOpen, categories } = this.state;
+    const { isModalOpen, isEditModalOpen, categories, selectedCategory } =
+      this.state;
 
     const columns = [
       {
         key: "name",
         title: "Name",
         dataIndex: "name",
+        align: "left",
       },
       {
         key: "action",
         title: "Action",
         dataIndex: "action",
-        render: (record) => {
+        align: "right",
+        render: (_, record) => {
           return (
             <>
-              <EditOutlined style={{ fontSize: "16px", cursor: "pointer" }} />
-              <DeleteOutlined
-                style={{
-                  fontSize: "16px",
-                  cursor: "pointer",
-                  marginLeft: "10px",
-                }}
+              <EditOutlined
+                style={{ fontSize: "16px", cursor: "pointer" }}
+                onClick={() => this.handleEdit(record)}
               />
+              <Popconfirm
+                title="Delete the category"
+                description="Are you sure to delete this item?"
+                onConfirm={() => this.deleteCategory(record.categoryDocId)}
+                okText="Yes"
+                cancelText="No"
+              >
+                <DeleteOutlined
+                  style={{
+                    fontSize: "16px",
+                    cursor: "pointer",
+                    marginLeft: "10px",
+                  }}
+                />
+              </Popconfirm>
             </>
           );
         },
@@ -94,13 +152,29 @@ class Categories extends Component {
             <CategoryForm closeModalOnSubmit={() => this.toggleModal(false)} />
           </Modal>
 
+          {/* Edit Income Modal */}
+          <Modal
+            title="Edit Income"
+            footer={false}
+            open={isEditModalOpen}
+            onOk={() => this.toggleEditModal(false)}
+            onCancel={() => this.toggleEditModal(false)}
+            style={{ maxWidth: 400 }}
+          >
+            <EditCategoryForm
+              categoryData={selectedCategory}
+              closeModalOnSubmit={() => this.toggleEditModal(false)}
+            />
+          </Modal>
+
           <div className="table">
             <div className="table_component" role="region" tabIndex="0">
               {/* ANTD */}
               {categories.length === 0 ? (
-                <tr>
-                  <td style={{ color: "#ff5435" }}>Categories not found</td>
-                </tr>
+                <Empty
+                  image={Empty.PRESENTED_IMAGE_SIMPLE}
+                  description="Categories not found"
+                />
               ) : (
                 <Table columns={columns} dataSource={categories} rowKey="id" />
               )}

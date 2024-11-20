@@ -109,7 +109,7 @@ class IncomeForm extends Component {
       <Form
         {...layout}
         ref={this.formRef}
-        name="basic"
+        name="incomeForm"
         labelCol={{
           span: 6,
         }}
@@ -209,6 +209,7 @@ class IncomeForm extends Component {
             type="primary"
             htmlType="submit"
             style={{ marginLeft: "88px" }}
+            onClick={closeModalOnSubmit}
           >
             Submit
           </Button>
