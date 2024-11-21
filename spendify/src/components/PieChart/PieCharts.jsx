@@ -1,39 +1,94 @@
-import React from "react";
-import { PieChart, Pie, Sector, Cell } from "recharts";
-
+import React, { Component, PureComponent } from "react";
+import {
+  collection,
+  addDoc,
+  getDocs,
+  onSnapshot,
+  query,
+  where,
+  doc,
+  deleteDoc,
+  QuerySnapshot,
+  writeBatch,
+  getDoc,
+} from "firebase/firestore";
+import { db } from "../../firebase";
 import "./style.less";
 import "../../global.less";
+import { PieChart, Pie, Legend, Tooltip, ResponsiveContainer } from "recharts";
 
-const data = [
-  { name: "Group A", value: 400 },
-  { name: "Group B", value: 300 },
-  { name: "Group C", value: 300 },
-  { name: "Group D", value: 200 },
-];
-const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
+class PieCharts extends PureComponent {
+  constructor(props) {
+    super(props);
+    this.state = {
+      expenses: [],
+    };
+  }
 
-const PieCharts = () => {
-  return (
-    <div className="piechart">
-      {" "}
-      <PieChart width={220} height={200} className="piechart">
-        <Pie
-          data={data}
-          cx={100}
-          cy={100}
-          innerRadius={60}
-          outerRadius={80}
-          fill="#8884d8"
-          paddingAngle={0}
-          dataKey="value"
+  componentDidMount() {
+    const transactionsCollection = collection(db, "transactions");
+    const expenseQuery = query(
+      transactionsCollection,
+      where("type", "==", "expense")
+    );
+
+    this.unsubscribe = onSnapshot(expenseQuery, (snapshot) => {
+      const expensesData = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        transactionDocId: doc.id,
+        ...doc.data(),
+      }));
+
+      /* Filtered Data */
+      const filtered = expensesData.map((item) => ({
+        name: item.category,
+        value: item.amount,
+      }));
+
+      this.setState({
+        expenses: filtered,
+      });
+    });
+  }
+
+  componentWillUnmount() {
+    if (this.unsubscribe) this.unsubscribe();
+  }
+
+  render() {
+    const { expenses } = this.state;
+
+    return (
+      <ResponsiveContainer width="100%" height="100%">
+        <PieChart
+          width={400}
+          height={400}
+          style={{ scale: "1.2", height: "210px" }}
         >
-          {data.map((entry, index) => (
-            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-          ))}
-        </Pie>
-      </PieChart>
-    </div>
-  );
-};
+          <Pie
+            dataKey="value"
+            isAnimationActive={false}
+            data={expenses}
+            cx="50%"
+            cy="50%"
+            outerRadius={80}
+            fill="#8884d8"
+            label
+          />
+          <Pie
+            dataKey="value"
+            data={expenses}
+            cx={500}
+            cy={200}
+            innerRadius={40}
+            outerRadius={80}
+            fill="#82ca9d"
+          />
+          <Tooltip />
+        </PieChart>
+      </ResponsiveContainer>
+    );
+  }
+}
 
 export default PieCharts;

@@ -131,15 +131,14 @@ class Dashboard extends Component {
                 <h3 className="card-heading">All Expenses</h3>
               </div>
               <PieCharts />
-              <div className="flex item-center justify-between width-full gap-4">
-                <ul className="flex flex-column gap-4">
-                  <li className="food">Food</li>
-                  <li className="vacation">Vacation</li>
-                </ul>
-                <ul className="flex flex-column gap-4">
-                  <li className="movie">Movie</li>
-                  <li className="entertainments">Entertainments</li>
-                </ul>
+              <div className="pie-category flex item-center justify-between width-full gap-4">
+                {transaction
+                  .filter((item) => item.type !== "income")
+                  .map((item) => (
+                    <ul className="flex flex-column gap-4" key={item.id}>
+                      <li className="food">{item.category}</li>
+                    </ul>
+                  ))}
               </div>
             </div>
           </Col>

@@ -28,7 +28,7 @@ import {
 } from "antd";
 import dayjs from "dayjs";
 
-const dateFormat = "YYYY/MM/DD";
+const dateFormat = "DD/MM/YYYY";
 
 class EditExpenseForm extends Component {
   constructor(props) {

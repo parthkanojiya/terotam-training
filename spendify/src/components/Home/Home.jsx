@@ -9,7 +9,7 @@ function Home() {
     <>
       <main>
         <Dashboard />
-        <SearchBar />
+        {/* <SearchBar /> */}
         <TransactionsList />
       </main>
     </>
