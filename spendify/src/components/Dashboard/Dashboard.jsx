@@ -17,7 +17,6 @@ class Dashboard extends Component {
 
   componentDidMount() {
     const fetchData = async () => {
-      // fetch "transactions" data
       const incomesSnapshot = await getDocs(collection(db, "transactions"));
       const transactionsData = incomesSnapshot.docs.map((doc) => ({
         id: doc.id,
