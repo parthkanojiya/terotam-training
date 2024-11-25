@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext, useState } from "react";
 import "./style.less";
 import "../../global.less";
 import { Input, Select, Space } from "antd";
@@ -6,8 +6,12 @@ import { Col, Row } from "antd";
 import { AudioOutlined } from "@ant-design/icons";
 import Search from "antd/es/transfer/search";
 import searchIcon from "../../assets/search.svg";
+import { LightMode, DarkMode } from "../../utils/constants.jsx";
+import ThemeContext from "../../themeContext.jsx";
 
 const MainHeader = () => {
+  const { theme, toggleTheme } = useContext(ThemeContext);
+
   return (
     <header>
       <div className="header-wrapper">
@@ -21,6 +25,9 @@ const MainHeader = () => {
               />
             </Space>
           </div>
+          <button className="light-dark-btn" onClick={toggleTheme}>
+            {theme === "dark" ? <LightMode /> : <DarkMode />}
+          </button>
           <button className="sign-in-up" disabled>
             Logout
           </button>
