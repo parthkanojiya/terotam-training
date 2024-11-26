@@ -12,6 +12,8 @@ import {
   Space,
   Table,
   Tag,
+  ConfigProvider,
+  theme,
 } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import {
@@ -26,8 +28,12 @@ import {
   QuerySnapshot,
   writeBatch,
   getDoc,
+  orderBy,
+  limit,
+  startAfter,
 } from "firebase/firestore";
 import { db } from "../../firebase";
+import Search from "antd/es/transfer/search";
 
 class Expenses extends Component {
   constructor(props) {
@@ -37,32 +43,91 @@ class Expenses extends Component {
       isEditModalOpen: false,
       expenses: [],
       allExpenses: [],
+      allExpenseDatas: [],
       categories: [],
       selectedCategory: "",
       selectedExpense: [],
+      currentPage: 1,
+      pageSize: 10,
+      lastVisible: null,
+      totalItems: 0,
+      searchQuery: "",
     };
   }
 
   componentDidMount() {
-    const transactionsCollection = collection(db, "transactions");
-    const expenseQuery = query(
-      transactionsCollection,
-      where("type", "==", "expense")
-    );
+    this.fetchPaginatedData();
+  }
 
-    this.unsubscribe = onSnapshot(expenseQuery, (snapshot) => {
-      const transactionsData = snapshot.docs.map((doc) => ({
+  fetchPaginatedData = async (page = 1) => {
+    const { pageSize, lastVisible } = this.state;
+    const transactionsCollection = collection(db, "transactions");
+
+    try {
+      let expenseQuery;
+
+      if (page === 1) {
+        expenseQuery = query(
+          transactionsCollection,
+          where("type", "==", "expense"),
+          orderBy("date", "desc"),
+          limit(pageSize)
+        );
+
+        const totalQuery = query(
+          transactionsCollection,
+          where("type", "==", "expense")
+        );
+        const totalSnapshot = await getDocs(totalQuery);
+        const totalTransactionsData = totalSnapshot.docs.map((doc) => ({
+          id: doc.id,
+          transactionDocId: doc.id,
+          ...doc.data(),
+        }));
+        this.setState({
+          totalItems: totalSnapshot.size,
+          allExpenseDatas: totalTransactionsData,
+        });
+      } else {
+        expenseQuery = query(
+          transactionsCollection,
+          where("type", "==", "expense"),
+          orderBy("date", "desc"),
+          startAfter(lastVisible),
+          limit(pageSize)
+        );
+      }
+
+      const expenseSnapshot = await getDocs(expenseQuery);
+
+      const transactionsData = expenseSnapshot.docs.map((doc) => ({
         id: doc.id,
         transactionDocId: doc.id,
         ...doc.data(),
       }));
-      this.setState({
-        expenses: transactionsData,
+
+      const lastDoc = expenseSnapshot.docs[expenseSnapshot.docs.length - 1];
+
+      this.setState((prevState) => ({
+        expenses:
+          page === 1
+            ? transactionsData
+            : [...prevState.expenses, ...transactionsData],
         allExpenses: transactionsData,
+        lastVisible: lastDoc,
+        currentPage: page,
         categories: this.getUniqueCategories(transactionsData),
-      });
+      }));
+    } catch (error) {
+      console.error("Error fetching paginated data:", error.message);
+    }
+  };
+
+  handlePageChange = (page) => {
+    this.setState({ currentPage: page }, () => {
+      this.fetchPaginatedData(page);
     });
-  }
+  };
 
   componentWillUnmount() {
     if (this.unsubscribe) this.unsubscribe();
@@ -140,6 +205,36 @@ class Expenses extends Component {
     });
   };
 
+  onSearch = (value) => {
+    const { allExpenseDatas, pageSize } = this.state;
+    const searchQuery = value.target.value.trim().toLowerCase();
+
+    if (!searchQuery) {
+      this.setState({
+        expenses: allExpenseDatas.slice(0, pageSize),
+        currentPage: 1,
+        totalItems: allExpenseDatas.length,
+      });
+      return;
+    }
+
+    const filteredExpenses = allExpenseDatas.filter((expense) => {
+      const expenseData = [
+        expense.name.toLowerCase(),
+        expense.type.toLowerCase(),
+        expense.amount.toString().toLowerCase(),
+        expense.category.toLowerCase(),
+      ];
+      return expenseData.some((data) => data.includes(searchQuery));
+    });
+
+    this.setState({
+      expenses: filteredExpenses,
+      currentPage: 1,
+      totalItems: filteredExpenses.length,
+    });
+  };
+
   render() {
     const {
       isModalOpen,
@@ -148,6 +243,10 @@ class Expenses extends Component {
       categories,
       selectedCategory,
       selectedExpense,
+      currentPage,
+      pageSize,
+      totalItems,
+      searchQuery,
     } = this.state;
 
     const columns = [
@@ -222,6 +321,15 @@ class Expenses extends Component {
     return (
       <section className="expenses-page-section">
         <div className="transaction-wrapper">
+          <ConfigProvider
+            theme={{
+              algorithm: theme.defaultAlgorithm,
+            }}
+          >
+            <Space direction="vertical" style={{ padding: "0 0 1rem 0" }}>
+              <Search placeholder="Search expenses" onChange={this.onSearch} />
+            </Space>
+          </ConfigProvider>
           <div className="transactions-heading flex justify-between item-center">
             <h3>Expenses</h3>
             <div className="flex justify-between item-center gap-4">
@@ -264,7 +372,21 @@ class Expenses extends Component {
 
           <div className="table">
             <div className="table_component" role="region" tabIndex="0">
-              <Table columns={columns} dataSource={expenses} rowKey="id" />
+              <Table
+                columns={columns}
+                dataSource={expenses}
+                rowKey="id"
+                pagination={
+                  searchQuery
+                    ? false
+                    : {
+                        current: currentPage,
+                        pageSize,
+                        total: totalItems,
+                        onChange: this.handlePageChange,
+                      }
+                }
+              />
             </div>
           </div>
         </div>

@@ -32,14 +32,14 @@ class Dashboard extends Component {
     const { transaction } = this.state;
 
     // Total Income Sum
-    const filtered = transaction.filter((i) => i.type !== "Expense");
+    const filtered = transaction.filter((i) => i.type !== "expense");
     const totalIncome = filtered.reduce(
       (sum, item) => sum + Number(item.amount),
       0
     );
 
     // Total Expense Sum
-    const filteredExpense = transaction.filter((i) => i.type !== "Income");
+    const filteredExpense = transaction.filter((i) => i.type !== "income");
     const totalExpense = filteredExpense.reduce(
       (sum, item) => sum + Number(item.amount),
       0
@@ -131,11 +131,17 @@ class Dashboard extends Component {
               </div>
               <PieCharts />
               <div className="pie-category flex item-center justify-between width-full gap-4">
-                {transaction
-                  .filter((item) => item.type !== "income")
-                  .map((item) => (
-                    <ul className="flex flex-column gap-4" key={item.id}>
-                      <li className="food">{item.category}</li>
+                {[
+                  ...new Set(
+                    transaction
+                      .filter((item) => item.type !== "income")
+                      .map((item) => item.category)
+                  ),
+                ]
+                  .slice(0, 4)
+                  .map((category, index) => (
+                    <ul className="flex flex-column gap-4" key={index}>
+                      <li className="food">{category}</li>
                     </ul>
                   ))}
               </div>

@@ -1,9 +1,27 @@
 import React, { Component } from "react";
 import "./style.less";
 import "../../global.less";
-import { collection, onSnapshot } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  limit,
+  onSnapshot,
+  orderBy,
+  query,
+  startAfter,
+} from "firebase/firestore";
 import { db } from "../../firebase";
-import { Button, Modal, Select, Space, Table, Tag } from "antd";
+import {
+  Button,
+  ConfigProvider,
+  Modal,
+  Select,
+  Space,
+  Table,
+  Tag,
+  theme,
+} from "antd";
+import Search from "antd/es/transfer/search";
 
 class TransactionsList extends Component {
   constructor(props) {
@@ -11,27 +29,88 @@ class TransactionsList extends Component {
     this.state = {
       transactions: [],
       allTransactions: [],
+      allTransactionDatas: [],
       categories: [],
       selectedCategory: "",
+      currentPage: 1,
+      pageSize: 10,
+      // lastVisible: null,
+      lastVisibleDocs: [],
+      totalItems: 0,
+      searchQuery: "",
     };
   }
 
   componentDidMount() {
+    this.fetchPaginatedData(1);
+  }
+
+  fetchPaginatedData = async (page) => {
+    const { pageSize, lastVisibleDocs } = this.state;
     const transactionsCollection = collection(db, "transactions");
-    this.incomesUnsubscribe = onSnapshot(transactionsCollection, (snapshot) => {
-      const transactionsData = snapshot.docs.map((doc) => ({
+
+    try {
+      let transactionQuery;
+
+      if (page === 1) {
+        transactionQuery = query(
+          transactionsCollection,
+          orderBy("date", "desc"),
+          limit(pageSize)
+        );
+
+        const totalSnapshot = await getDocs(transactionsCollection);
+        const totalTransactionsData = totalSnapshot.docs.map((doc) => ({
+          id: doc.id,
+          transactionDocId: doc.id,
+          ...doc.data(),
+        }));
+        this.setState({
+          totalItems: totalSnapshot.size,
+          allTransactions: totalTransactionsData,
+          allTransactionDatas: totalTransactionsData,
+        });
+      } else {
+        const lastVisible = lastVisibleDocs[page - 2];
+        transactionQuery = query(
+          transactionsCollection,
+          orderBy("date", "desc"),
+          startAfter(lastVisible),
+          limit(pageSize)
+        );
+      }
+
+      const transactionSnapshot = await getDocs(transactionQuery);
+      const transactionsData = transactionSnapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
       }));
-      this.setState(
-        (prevState) => ({
-          transactions: [...prevState.transactions, ...transactionsData],
-          allTransactions: [...prevState.transactions, ...transactionsData],
-        }),
-        this.updateCategories
-      );
+
+      const lastDoc =
+        transactionSnapshot.docs[transactionSnapshot.docs.length - 1];
+
+      this.setState((prevState) => {
+        const updatedLastVisibleDocs = [...prevState.lastVisibleDocs];
+        if (page > updatedLastVisibleDocs.length) {
+          updatedLastVisibleDocs.push(lastDoc);
+        }
+
+        return {
+          transactions: transactionsData,
+          currentPage: page,
+          lastVisibleDocs: updatedLastVisibleDocs,
+        };
+      }, this.updateCategories);
+    } catch (error) {
+      console.error("Error fetching paginated data:", error.message);
+    }
+  };
+
+  handlePageChange = (page) => {
+    this.setState({ currentPage: page }, () => {
+      this.fetchPaginatedData(page);
     });
-  }
+  };
 
   componentWillUnmount() {
     if (this.incomesUnsubscribe) this.incomesUnsubscribe();
@@ -58,8 +137,49 @@ class TransactionsList extends Component {
     }
   };
 
+  onSearch = (value) => {
+    const { allTransactionDatas, pageSize, lastVisible } = this.state;
+    const searchQuery = value.target.value.trim().toLowerCase();
+
+    if (!searchQuery) {
+      this.setState((prevState) => ({
+        transactions: prevState.allTransactions,
+        currentPage: 1,
+        totalItems: prevState.allTransactions.length,
+        searchQuery: "",
+      }));
+      return;
+    }
+
+    const filteredTransactions = allTransactionDatas.filter((transaction) => {
+      const transactionData = [
+        transaction.name.toLowerCase(),
+        transaction.type.toLowerCase(),
+        transaction.amount.toString().toLowerCase(),
+        transaction.category.toLowerCase(),
+      ];
+      return transactionData.some((data) => data.includes(searchQuery));
+    });
+
+    this.setState({
+      transactions: filteredTransactions,
+      currentPage: 1,
+      totalItems: filteredTransactions.length,
+      searchQuery,
+    });
+  };
+
   render() {
-    const { transactions, categories, selectedCategory } = this.state;
+    const {
+      transactions,
+      allTransactions,
+      categories,
+      selectedCategory,
+      currentPage,
+      pageSize,
+      totalItems,
+      searchQuery,
+    } = this.state;
 
     const columns = [
       {
@@ -103,6 +223,18 @@ class TransactionsList extends Component {
     return (
       <section className="transactions-section">
         <div className="transaction-wrapper">
+          <ConfigProvider
+            theme={{
+              algorithm: theme.defaultAlgorithm,
+            }}
+          >
+            <Space direction="vertical" style={{ padding: "0 0 1rem 0" }}>
+              <Search
+                placeholder="Search transactions"
+                onChange={this.onSearch}
+              />
+            </Space>
+          </ConfigProvider>
           <div className="transactions-heading flex justify-between item-center">
             <h3>Transactions</h3>
 
@@ -118,7 +250,21 @@ class TransactionsList extends Component {
 
           <div className="table">
             <div className="table_component" role="region" tabIndex="0">
-              <Table columns={columns} dataSource={transactions} rowKey="id" />
+              <Table
+                columns={columns}
+                dataSource={transactions}
+                rowKey="id"
+                pagination={
+                  searchQuery
+                    ? false
+                    : {
+                        current: currentPage,
+                        pageSize,
+                        total: totalItems,
+                        onChange: this.handlePageChange,
+                      }
+                }
+              />
             </div>
           </div>
         </div>

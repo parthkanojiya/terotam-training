@@ -1,7 +1,7 @@
 import React, { useContext, useState } from "react";
 import "./style.less";
 import "../../global.less";
-import { Input, Select, Space } from "antd";
+import { Button, Flex, Input, Select, Space } from "antd";
 import { Col, Row } from "antd";
 import { AudioOutlined } from "@ant-design/icons";
 import Search from "antd/es/transfer/search";
@@ -28,9 +28,12 @@ const MainHeader = () => {
           <button className="light-dark-btn" onClick={toggleTheme}>
             {theme === "dark" ? <LightMode /> : <DarkMode />}
           </button>
-          <button className="sign-in-up" disabled>
-            Logout
-          </button>
+
+          <Flex gap="small">
+            <Button type="primary" disabled>
+              Logout
+            </Button>
+          </Flex>
         </div>
       </div>
     </header>

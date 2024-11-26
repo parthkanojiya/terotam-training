@@ -40,10 +40,14 @@ class PieCharts extends PureComponent {
       }));
 
       /* Filtered Data */
-      const filtered = expensesData.map((item) => ({
-        name: item.category,
-        value: item.amount,
-      }));
+      const filtered = [
+        ...new Set(
+          expensesData.map((item) => ({
+            name: item.category,
+            value: item.amount,
+          }))
+        ),
+      ].slice(0, 5);
 
       this.setState({
         expenses: filtered,

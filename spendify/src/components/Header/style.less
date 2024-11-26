@@ -45,6 +45,13 @@ header {
       visibility: hidden;
     }
 
+    :where(.css-dev-only-do-not-override-apn68).ant-btn-variant-solid:disabled,
+    :where(
+        .css-dev-only-do-not-override-apn68
+      ).ant-btn-variant-solid.ant-btn-disabled {
+      color: var(--sign-in-up-text-color) !important;
+    }
+
     .sign-in-up {
       height: 32px;
       display: flex;
@@ -60,8 +67,9 @@ header {
     }
     .sign-in-up:disabled {
       background: #f4f4f4;
-      color: lightgray;
-      border: 1px solid #d9d9d9;
+      background: var(--sign-in-up);
+      color: var(--text-color);
+      border: var(--border-color);
     }
 
     /* Dark Light Mode */
