@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
@@ -8,8 +8,14 @@ import {
 } from "@ant-design/icons";
 import { Button, Layout, Menu, theme } from "antd";
 const { Header, Sider, Content } = Layout;
-import { Routes, Route, Link, useNavigate } from "react-router-dom";
-
+import {
+  Routes,
+  Route,
+  Link,
+  useNavigate,
+  BrowserRouter,
+  Outlet,
+} from "react-router-dom";
 import "./global.less";
 
 // Components
@@ -30,6 +36,7 @@ import { BiCategoryAlt } from "react-icons/bi";
 import { GiReceiveMoney } from "react-icons/gi";
 import { GiPayMoney } from "react-icons/gi";
 import { CiViewList } from "react-icons/ci";
+import Login from "./Pages/Login/Login";
 
 function App() {
   const [collapsed, setCollapsed] = useState(false);
@@ -39,10 +46,17 @@ function App() {
 
   const navigate = useNavigate();
 
+  React.useEffect(() => {
+    const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+    if (isLoggedIn && window.location.pathname === "/") {
+      navigate("/home");
+    }
+  }, []);
+
   return (
     <Layout>
       <Sider trigger={null} collapsible collapsed={collapsed}>
-        <Link to="/" className="demo-logo-vertical">
+        <Link to="/home" className="demo-logo-vertical">
           <FcMoneyTransfer style={{ fontSize: "2rem", margin: "0.8rem" }} />
           {collapsed === true ? (
             ""
@@ -58,32 +72,32 @@ function App() {
           onClick={({ key }) => navigate(key)}
           items={[
             {
-              key: "/",
+              key: "/home",
               icon: <FaHome />,
               label: "Home",
             },
             {
-              key: "dashboard",
+              key: "/home/dashboard",
               icon: <MdDashboard />,
               label: "Dashboard",
             },
             {
-              key: "categories",
+              key: "/home/categories",
               icon: <BiCategoryAlt />,
               label: "Categories",
             },
             {
-              key: "incomes",
+              key: "/home/incomes",
               icon: <GiReceiveMoney />,
               label: "Incomes",
             },
             {
-              key: "expenses",
+              key: "/home/expenses",
               icon: <GiPayMoney />,
               label: "Expenses",
             },
             {
-              key: "transactions",
+              key: "/home/transactions",
               icon: <CiViewList />,
               label: "Transactions",
             },
@@ -114,33 +128,15 @@ function App() {
         </Header>
         <Content
           style={{
-            // margin: "24px 16px",
             margin: "14px",
-            // padding: 12,
             minHeight: 280,
-            // background: colorBgContainer,
             borderRadius: borderRadiusLG,
           }}
         >
-          <ContentRoutes>
-            <Home />
-          </ContentRoutes>
+          <Outlet />
         </Content>
       </Layout>
     </Layout>
-  );
-}
-
-function ContentRoutes() {
-  return (
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/categories" element={<Categories />} />
-      <Route path="/incomes" element={<Incomes />} />
-      <Route path="/expenses" element={<Expenses />} />
-      <Route path="/transactions" element={<Transactions />} />
-    </Routes>
   );
 }
 

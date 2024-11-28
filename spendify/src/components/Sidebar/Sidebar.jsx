@@ -12,7 +12,10 @@ import categories from "../../assets/categories.svg";
 const Sidebar = () => {
   return (
     <nav className="sidebar sidebar-box-shadow">
-      <Link to="/" className="logo flex item-center gap-8 text-decoration-none">
+      <Link
+        to="/home"
+        className="logo flex item-center gap-8 text-decoration-none"
+      >
         <span className="logo-icon">S</span>
         <span>Spendify</span>
       </Link>
