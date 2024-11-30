@@ -4,9 +4,6 @@
   color: var(--text-color);
   border-radius: 10px;
   padding: 1.5rem;
-  // box-shadow: 0 1px 1px rgba(0, 0, 0, 0.12), 0 2px 2px rgba(0, 0, 0, 0.12);
-  // border: 1px solid #d9d9d9;
-  // box-shadow: 0 1px 1px rgba(0, 0, 0, 0.12), 0 2px 2px rgba(0, 0, 0, 0.12) !important;
   box-shadow: var(--box-shadow);
   min-height: 515px;
   transition: all 0.5s ease-in-out !important;
@@ -15,20 +12,16 @@
     .export-csv,
     .import-csv {
       padding: 6px 8px;
-      background: white;
-      border: 1px solid #d9d9d9;
+      background: var(--disabled-bg);
+      border: var(--disabled-border);
+      color: var(--disabled-text);
       border-radius: 6px;
       font-weight: 500;
       font-size: 14px;
       cursor: pointer;
     }
-    :disabled {
-      background-color: #f4f4f4;
-    }
-
-    // .import-csv {
-    //   background: #387ef5;
-    //   border: 1px solid #387ef5;
+    // :disabled {
+    //   background-color: #f4f4f4;
     // }
 
     ul li {
@@ -57,12 +50,11 @@
     .ant-select {
       width: 160px !important;
     }
-  }
 
-  .import-csv {
-    background: #7774ff;
-    // color: white;
-    border: none;
+    h3 {
+      font-family: "SF Mono", monospace;
+      font-weight: 800;
+    }
   }
 
   .table {
@@ -86,19 +78,5 @@
   .table_component caption {
     caption-side: top;
     text-align: left;
-  }
-
-  .table_component th {
-    // background-color: #ededed;
-    color: #000000;
-    padding: 18px 10px;
-  }
-
-  .table_component td {
-    // background-color: #ffffff;
-    color: #000000;
-    padding: 18px 10px;
-    // border-bottom: 1px solid #ededed;
-    font-size: 14px;
   }
 }

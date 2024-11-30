@@ -4,7 +4,7 @@ import "../../global.less";
 import FinanceChart from "../FinanceChart/FinanceChart";
 import PieCharts from "../PieChart/PieCharts";
 import { collection, getDoc, getDocs, onSnapshot } from "firebase/firestore";
-import { db } from "../../firebase";
+import { db, auth } from "../../firebase";
 import { Col, Row } from "antd";
 
 class Dashboard extends Component {
@@ -12,20 +12,36 @@ class Dashboard extends Component {
     super(props);
     this.state = {
       transaction: [],
+      userId: null,
     };
   }
 
   componentDidMount() {
-    const fetchData = async () => {
-      const incomesSnapshot = await getDocs(collection(db, "transactions"));
-      const transactionsData = incomesSnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
+    this.authUnsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        const userId = user.uid;
+        this.setState({ userId });
 
-      this.setState({ transaction: transactionsData });
-    };
-    fetchData();
+        const transactionsCollection = collection(
+          db,
+          `users/${userId}/transactions`
+        );
+        this.unsubscribe = onSnapshot(transactionsCollection, (snapshot) => {
+          const transactionsData = snapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
+          this.setState({ transaction: transactionsData });
+        });
+      } else {
+        console.error("User is not authenticated.");
+      }
+    });
+  }
+
+  componentWillUnmount() {
+    if (this.unsubscribe) this.unsubscribe();
+    if (this.authUnsubscribe) this.authUnsubscribe();
   }
 
   render() {

@@ -35,6 +35,7 @@ import {
 import { db } from "../../firebase";
 import EditIncomeForm from "../../components/IncomeForm/EditIncomeForm";
 import Search from "antd/es/transfer/search";
+import { auth } from "../../firebase";
 
 class Incomes extends Component {
   constructor(props) {
@@ -60,9 +61,11 @@ class Incomes extends Component {
     this.fetchPaginatedData();
   }
 
-  fetchPaginatedData = async (page = 1) => {
+  fetchPaginatedData = (page = 1) => {
     const { pageSize, lastVisible } = this.state;
-    const transactionsCollection = collection(db, "transactions");
+
+    const user = auth.currentUser.uid;
+    const transactionsCollection = collection(db, `users/${user}/transactions`);
 
     try {
       let incomeQuery;
@@ -79,15 +82,18 @@ class Incomes extends Component {
           transactionsCollection,
           where("type", "==", "income")
         );
-        const totalSnapshot = await getDocs(totalQuery);
-        const totalTransactionsData = totalSnapshot.docs.map((doc) => ({
-          id: doc.id,
-          transactionDocId: doc.id,
-          ...doc.data(),
-        }));
-        this.setState({
-          totalItems: totalSnapshot.size,
-          allIncomeDatas: totalTransactionsData,
+
+        this.unsubscribeTotal = onSnapshot(totalQuery, (snapshot) => {
+          const totalTransactionsData = snapshot.docs.map((doc) => ({
+            id: doc.id,
+            transactionDocId: doc.id,
+            ...doc.data(),
+          }));
+
+          this.setState({
+            totalItems: snapshot.size,
+            allIncomeDatas: totalTransactionsData,
+          });
         });
       } else {
         incomeQuery = query(
@@ -99,30 +105,35 @@ class Incomes extends Component {
         );
       }
 
-      const incomeSnapshot = await getDocs(incomeQuery);
+      this.unsubscribePaginated = onSnapshot(incomeQuery, (snapshot) => {
+        const transactionsData = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          transactionDocId: doc.id,
+          ...doc.data(),
+        }));
 
-      const transactionsData = incomeSnapshot.docs.map((doc) => ({
-        id: doc.id,
-        transactionDocId: doc.id,
-        ...doc.data(),
-      }));
+        const lastDoc = snapshot.docs[snapshot.docs.length - 1];
 
-      const lastDoc = incomeSnapshot.docs[incomeSnapshot.docs.length - 1];
-
-      this.setState((prevState) => ({
-        incomes:
-          page === 1
-            ? transactionsData
-            : [...prevState.incomes, ...transactionsData],
-        allIncomes: transactionsData,
-        lastVisible: lastDoc,
-        currentPage: page,
-        categories: this.getUniqueCategories(transactionsData),
-      }));
+        this.setState((prevState) => ({
+          incomes:
+            page === 1
+              ? transactionsData
+              : [...prevState.incomes, ...transactionsData],
+          allIncomes: transactionsData,
+          lastVisible: lastDoc,
+          currentPage: page,
+          categories: this.getUniqueCategories(transactionsData),
+        }));
+      });
     } catch (error) {
       console.error("Error fetching paginated data:", error.message);
     }
   };
+
+  componentWillUnmount() {
+    if (this.unsubscribeTotal) this.unsubscribeTotal();
+    if (this.unsubscribePaginated) this.unsubscribePaginated();
+  }
 
   handlePageChange = (page) => {
     this.setState({ currentPage: page }, () => {
@@ -174,8 +185,9 @@ class Incomes extends Component {
   };
 
   deleteIncome = async (id) => {
+    const user = auth.currentUser.uid;
     try {
-      const incomeDocRef = doc(db, "transactions", id);
+      const incomeDocRef = doc(db, `users/${user}/transactions`, id);
       await deleteDoc(incomeDocRef);
       this.setState((prevState) => ({
         incomes: prevState.incomes.filter((income) => income.id !== id),

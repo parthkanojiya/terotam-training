@@ -11,10 +11,11 @@ import ThemeContext from "../../themeContext.jsx";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../../firebase.js";
+import UserContext from "../../UserContext.jsx";
 
 const MainHeader = () => {
   const { theme, toggleTheme } = useContext(ThemeContext);
-  const [userData, setUserData] = useState(null);
+  const { userData, setUserData } = useContext(UserContext);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -24,7 +25,7 @@ const MainHeader = () => {
       setUserData(JSON.parse(storedUserData));
     }
 
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         const { email, displayName } = user;
         const userDetails = { email, displayName };
@@ -62,21 +63,19 @@ const MainHeader = () => {
     <header>
       <div className="header-wrapper">
         <div className="search-wrapper flex item-center gap-4">
-          <div className="search-bar">
-            <Space direction="vertical" style={{ width: "100%" }}>
-              <Search
-                placeholder="Search transactions"
-                allowClear
-                // onSearch={onSearch}
-              />
-            </Space>
-          </div>
           <button className="light-dark-btn" onClick={toggleTheme}>
             {theme === "dark" ? <LightMode /> : <DarkMode />}
           </button>
-          <span>
-            {userData?.displayName ? `Welcome, ${userData.displayName}!` : ""}
-          </span>
+          <p className="display-name">
+            {userData?.displayName ? (
+              <span>
+                Welcome,{" "}
+                <b style={{ fontSize: "18px" }}>{userData.displayName}</b>
+              </span>
+            ) : (
+              ""
+            )}
+          </p>
           <Flex gap="small">
             <Button type="primary" onClick={handleSignOut}>
               Logout

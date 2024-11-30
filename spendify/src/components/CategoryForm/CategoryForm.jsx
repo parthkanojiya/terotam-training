@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import "../../global.less";
 import "./style.less";
 import { collection, addDoc, getDocs, onSnapshot } from "firebase/firestore";
-import { db } from "../../firebase";
+import { db, auth } from "../../firebase";
 import {
   Button,
   Checkbox,
@@ -24,13 +24,23 @@ class CategoryForm extends Component {
 
     this.state = {
       categories: [],
+      userId: null,
     };
   }
 
   formRef = React.createRef();
 
   componentDidMount() {
-    const categoriesCollection = collection(db, "categories");
+    const { userId } = this.state;
+    this.authUnsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        this.setState({ userId: user.uid });
+      } else {
+        console.error("User is not authenticated.");
+      }
+    });
+
+    const categoriesCollection = collection(db, `users/${userId}/categories`);
 
     this.unsubscribe = onSnapshot(categoriesCollection, (snapshot) => {
       const categoriesData = snapshot.docs.map((doc) => ({
@@ -46,6 +56,8 @@ class CategoryForm extends Component {
   }
 
   onFinish = async (values) => {
+    const { closeModalOnSubmit } = this.props;
+    const user = auth.currentUser.uid;
     const formattedValues = {
       ...values,
       id: crypto.randomUUID(),
@@ -56,12 +68,13 @@ class CategoryForm extends Component {
     localStorage.setItem("categories", JSON.stringify(data));
 
     try {
-      await addDoc(collection(db, "categories"), data);
+      await addDoc(collection(db, `users/${user}/categories`), data);
     } catch (error) {
       console.error("Error adding document to Firestore: ", error);
     }
 
     this.formRef.current.resetFields();
+    if (closeModalOnSubmit) closeModalOnSubmit();
   };
 
   onFinishFailed = (errorInfo) => {
@@ -69,8 +82,6 @@ class CategoryForm extends Component {
   };
 
   render() {
-    const { closeModalOnSubmit } = this.props;
-
     const layout = {
       labelCol: {
         span: 8,

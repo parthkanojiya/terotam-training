@@ -32,7 +32,7 @@ import {
   limit,
   startAfter,
 } from "firebase/firestore";
-import { db } from "../../firebase";
+import { db, auth } from "../../firebase";
 import Search from "antd/es/transfer/search";
 
 class Expenses extends Component {
@@ -59,9 +59,11 @@ class Expenses extends Component {
     this.fetchPaginatedData();
   }
 
-  fetchPaginatedData = async (page = 1) => {
+  /*  fetchPaginatedData = async (page = 1) => {
     const { pageSize, lastVisible } = this.state;
-    const transactionsCollection = collection(db, "transactions");
+    const user = auth.currentUser.uid;
+
+    const transactionsCollection = collection(db, `users/${user}/transactions`);
 
     try {
       let expenseQuery;
@@ -121,7 +123,81 @@ class Expenses extends Component {
     } catch (error) {
       console.error("Error fetching paginated data:", error.message);
     }
+  }; */
+
+  fetchPaginatedData = async (page = 1) => {
+    const { pageSize, lastVisible } = this.state;
+    const user = auth.currentUser.uid;
+
+    const transactionsCollection = collection(db, `users/${user}/transactions`);
+
+    try {
+      let expenseQuery;
+
+      if (page === 1) {
+        expenseQuery = query(
+          transactionsCollection,
+          where("type", "==", "expense"),
+          orderBy("date", "desc"),
+          limit(pageSize)
+        );
+
+        const totalQuery = query(
+          transactionsCollection,
+          where("type", "==", "expense")
+        );
+
+        this.unsubscribeTotal = onSnapshot(totalQuery, (snapshot) => {
+          const totalTransactionsData = snapshot.docs.map((doc) => ({
+            id: doc.id,
+            transactionDocId: doc.id,
+            ...doc.data(),
+          }));
+
+          this.setState({
+            totalItems: snapshot.size,
+            allExpenseDatas: totalTransactionsData,
+          });
+        });
+      } else {
+        expenseQuery = query(
+          transactionsCollection,
+          where("type", "==", "expense"),
+          orderBy("date", "desc"),
+          startAfter(lastVisible),
+          limit(pageSize)
+        );
+      }
+
+      this.unsubscribePaginated = onSnapshot(expenseQuery, (snapshot) => {
+        const transactionsData = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          transactionDocId: doc.id,
+          ...doc.data(),
+        }));
+
+        const lastDoc = snapshot.docs[snapshot.docs.length - 1];
+
+        this.setState((prevState) => ({
+          expenses:
+            page === 1
+              ? transactionsData
+              : [...prevState.incomes, ...transactionsData],
+          allExpenses: transactionsData,
+          lastVisible: lastDoc,
+          currentPage: page,
+          categories: this.getUniqueCategories(transactionsData),
+        }));
+      });
+    } catch (error) {
+      console.error("Error fetching paginated data:", error.message);
+    }
   };
+
+  componentWillUnmount() {
+    if (this.unsubscribeTotal) this.unsubscribeTotal();
+    if (this.unsubscribePaginated) this.unsubscribePaginated();
+  }
 
   handlePageChange = (page) => {
     this.setState({ currentPage: page }, () => {
@@ -182,8 +258,9 @@ class Expenses extends Component {
   };
 
   deleteExpense = async (id) => {
+    const user = auth.currentUser.uid;
     try {
-      const expenseDocRef = doc(db, "transactions", id);
+      const expenseDocRef = doc(db, `users/${user}/transactions`, id);
       await deleteDoc(expenseDocRef);
       this.setState((prevState) => ({
         expenses: prevState.expenses.filter((expense) => expense.id !== id),

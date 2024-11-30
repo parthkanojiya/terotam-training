@@ -25,81 +25,103 @@ import {
   writeBatch,
   getDoc,
 } from "firebase/firestore";
-import { db } from "../../firebase";
+import { db, auth } from "../../firebase";
+import { Empty } from "antd";
 
 class FinanceChart extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
       transactions: [],
+      userId: null,
     };
   }
 
   componentDidMount() {
-    const transactionsCollection = collection(db, "transactions");
-    this.transactionsUnsubscribe = onSnapshot(
-      transactionsCollection,
-      (snapshot) => {
-        const transactionsData = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
+    this.authUnsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        const userId = user.uid;
+        this.setState({ userId });
 
-        /* Filtered for Chart data */
-        const outputData = transactionsData.reduce((acc, item) => {
-          const year = item.date.split("/").pop();
+        const transactionsCollection = collection(
+          db,
+          `users/${userId}/transactions`
+        );
 
-          let yearEntry = acc.find((entry) => entry.name === year);
-          if (!yearEntry) {
-            yearEntry = { name: year, income: [], expense: [] };
-            acc.push(yearEntry);
-          }
+        this.transactionsUnsubscribe = onSnapshot(
+          transactionsCollection,
+          (snapshot) => {
+            const transactionsData = snapshot.docs.map((doc) => ({
+              id: doc.id,
+              ...doc.data(),
+            }));
 
-          if (item.type === "income") {
-            yearEntry.income.push(item.amount);
-          } else if (item.type === "expense") {
-            yearEntry.expense.push(item.amount);
-          }
+            /* Filtered for Chart data */
+            const outputData = transactionsData.reduce((acc, item) => {
+              const year = item.date.split("/").pop();
 
-          return acc;
-        }, []);
+              let yearEntry = acc.find((entry) => entry.name === year);
+              if (!yearEntry) {
+                yearEntry = { name: year, income: [], expense: [] };
+                acc.push(yearEntry);
+              }
 
-        const formattedOutput = outputData.flatMap((entry) => {
-          const results = [];
-          const maxLength = Math.max(entry.income.length, entry.expense.length);
+              if (item.type === "income") {
+                yearEntry.income.push(item.amount);
+              } else if (item.type === "expense") {
+                yearEntry.expense.push(item.amount);
+              }
 
-          for (let i = 0; i < maxLength; i++) {
-            results.push({
-              name: entry.name,
-              income: entry.income[i] || 0,
-              expense: entry.expense[i] || 0,
+              return acc;
+            }, []);
+
+            const formattedOutput = outputData.flatMap((entry) => {
+              const results = [];
+              const maxLength = Math.max(
+                entry.income.length,
+                entry.expense.length
+              );
+
+              for (let i = 0; i < maxLength; i++) {
+                results.push({
+                  name: entry.name,
+                  income: entry.income[i] || 0,
+                  expense: entry.expense[i] || 0,
+                });
+              }
+
+              return results;
+            });
+
+            this.setState({
+              transactions: formattedOutput,
             });
           }
-
-          return results;
-        });
-
-        this.setState({
-          transactions: formattedOutput,
-        });
+        );
+      } else {
+        console.error("User is not authenticated.");
       }
-    );
+    });
   }
 
   componentWillUnmount() {
     if (this.transactionsUnsubscribe) this.transactionsUnsubscribe();
+    if (this.authUnsubscribe) this.authUnsubscribe();
   }
 
   render() {
-    // console.log(this.state.transactions);
-    const { transactions } = this.state;
-
-    return (
+    return this.state.transactions.length === 0 ? (
+      <Empty
+        image={Empty.PRESENTED_IMAGE_SIMPLE}
+        description="Transactions Data not found"
+        className="barchart"
+      />
+    ) : (
       <ResponsiveContainer width="100%" height="100%">
         <BarChart
           width={500}
           height={300}
-          data={transactions}
+          data={this.state.transactions}
           margin={{
             top: 5,
             right: 30,

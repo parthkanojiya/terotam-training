@@ -8,7 +8,7 @@ import {
   query,
   where,
 } from "firebase/firestore";
-import { db } from "../../firebase";
+import { db, auth } from "../../firebase";
 import {
   Button,
   Checkbox,
@@ -26,7 +26,7 @@ import {
 } from "antd";
 import dayjs from "dayjs";
 
-const dateFormat = "YYYY/MM/DD";
+const dateFormat = "DD/MM/YYYY";
 
 class IncomeForm extends Component {
   constructor(props) {
@@ -71,17 +71,20 @@ class IncomeForm extends Component {
   }
 
   onFinish = async (values) => {
+    const user = auth.currentUser.uid;
+
     const formattedValues = {
       ...values,
       id: crypto.randomUUID(),
       date: values.date ? dayjs(values.date).format(dateFormat) : null,
+      type: "income",
     };
     const { id, name, amount, type, category, date } = formattedValues;
     const data = { id, name, amount, type, category, date };
     localStorage.setItem("transactions", JSON.stringify(data));
 
     try {
-      await addDoc(collection(db, "transactions"), data);
+      await addDoc(collection(db, `users/${user}/transactions`), data);
       message.success("Income Added Successfully!");
     } catch (error) {
       console.error("Error adding document to Firestore: ", error);

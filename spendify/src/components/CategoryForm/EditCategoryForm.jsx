@@ -8,7 +8,7 @@ import {
   updateDoc,
   doc,
 } from "firebase/firestore";
-import { db } from "../../firebase";
+import { db, auth } from "../../firebase";
 import {
   Button,
   Input,
@@ -30,7 +30,7 @@ class EditCategoryForm extends Component {
       name: props.categoryData?.name || "",
     };
 
-    this.formRef.current?.setFieldsValue(initialValues);
+    // this.formRef.current?.setFieldsValue(initialValues);
   }
 
   componentDidUpdate(prevProps) {
@@ -51,18 +51,24 @@ class EditCategoryForm extends Component {
 
   onFinish = async (values) => {
     const { categoryData, closeModalOnSubmit } = this.props;
+    const user = auth.currentUser.uid;
 
     const categoryName = { ...values };
 
     try {
       if (categoryData?.id) {
-        const docRef = doc(db, "categories", categoryData.categoryDocId);
+        // const docRef = doc(db, "categories", categoryData.categoryDocId);
+        const docRef = doc(
+          db,
+          `users/${user}/categories`,
+          categoryData.categoryDocId
+        );
         await updateDoc(docRef, categoryName);
         message.success("Category updated successfully!");
       } else {
         const id = crypto.randomUUID();
         const data = { ...categoryName, id };
-        await addDoc(collection(db, "categories"), data);
+        await addDoc(collection(db, `users/${user}/categories`), data);
         message.success("Category added successfully!");
       }
     } catch (error) {
@@ -79,8 +85,6 @@ class EditCategoryForm extends Component {
   };
 
   render() {
-    const { categories } = this.state;
-
     return (
       <Form
         ref={this.formRef}

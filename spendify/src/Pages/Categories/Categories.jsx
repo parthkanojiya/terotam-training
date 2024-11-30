@@ -12,7 +12,7 @@ import {
   writeBatch,
   getDoc,
 } from "firebase/firestore";
-import { db } from "../../firebase";
+import { db, auth } from "../../firebase";
 import CategoryForm from "../../components/CategoryForm/CategoryForm";
 import { Modal, Space, Table, Tag, Empty, message, Popconfirm } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
@@ -29,23 +29,37 @@ class Categories extends Component {
       categories: [],
       isEditing: false,
       selectedCategory: [],
+      userId: null,
     };
   }
 
   componentDidMount() {
-    const categoriesCollection = collection(db, "categories");
-    this.unsubscribe = onSnapshot(categoriesCollection, (snapshot) => {
-      const categoriesData = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        categoryDocId: doc.id,
-        ...doc.data(),
-      }));
-      this.setState({ categories: categoriesData });
+    this.authUnsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        const userId = user.uid;
+        this.setState({ userId });
+
+        const categoriesCollection = collection(
+          db,
+          `users/${userId}/categories`
+        );
+        this.unsubscribe = onSnapshot(categoriesCollection, (snapshot) => {
+          const categoriesData = snapshot.docs.map((doc) => ({
+            id: doc.id,
+            categoryDocId: doc.id,
+            ...doc.data(),
+          }));
+          this.setState({ categories: categoriesData });
+        });
+      } else {
+        console.error("User is not authenticated.");
+      }
     });
   }
 
   componentWillUnmount() {
     if (this.unsubscribe) this.unsubscribe();
+    if (this.authUnsubscribe) this.authUnsubscribe();
   }
 
   toggleModal = (isOpen) => {
@@ -60,8 +74,10 @@ class Categories extends Component {
   };
 
   deleteCategory = async (id) => {
+    const user = auth.currentUser.uid;
+
     try {
-      const categoryDocRef = doc(db, "categories", id);
+      const categoryDocRef = doc(db, `users/${user}/categories`, id);
       await deleteDoc(categoryDocRef);
       this.setState((prevState) => ({
         categories: prevState.categories.filter(

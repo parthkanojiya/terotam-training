@@ -7,85 +7,61 @@ header {
 
   .header-wrapper {
     padding: 0 2rem;
-    // box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.05);
-    // border: 1px solid;
-    // box-shadow: rgba(0, 0, 0, 0.07) 8px 2px 8px;
-    // width: 100%;
-    // height: 75px;
-    // display: flex;
-    // align-items: center;
-    // justify-content: flex-end;
-    // background: white;
-    // border: none !important;
 
-    // .logo > span {
-    //   font-size: 26px;
-    //   font-weight: 900;
-    // }
+    .search-wrapper {
+      .search-bar {
+        visibility: hidden;
+      }
 
-    // .search-bar {
-    //   // background-color: #f9f5f2;
-    //   // padding: 10px 10px;
-    //   // border-radius: 30px;
-    //   // display: flex;
-    //   // justify-content: space-between;
-    //   // align-items: center;
-    //   // gap: 4px;
+      :where(
+          .css-dev-only-do-not-override-apn68
+        ).ant-btn-variant-solid:disabled,
+      :where(
+          .css-dev-only-do-not-override-apn68
+        ).ant-btn-variant-solid.ant-btn-disabled {
+        color: var(--sign-in-up-text-color) !important;
+      }
 
-    //   input {
-    //     outline: none;
-    //     border: none;
-    //     background: none;
-    //     height: 100%;
-    //     width: 100%;
-    //     font-size: 16px;
-    //   }
-    // }
-    .search-bar {
-      visibility: hidden;
-    }
+      .sign-in-up {
+        height: 32px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 0px 12px;
+        border-radius: 6px;
+        cursor: pointer;
+        background: black;
+        color: white;
+        font-weight: 500;
+        border: none;
+      }
+      .sign-in-up:disabled {
+        background: #f4f4f4;
+        background: var(--sign-in-up);
+        color: var(--text-color);
+        border: var(--border-color);
+      }
 
-    :where(.css-dev-only-do-not-override-apn68).ant-btn-variant-solid:disabled,
-    :where(
-        .css-dev-only-do-not-override-apn68
-      ).ant-btn-variant-solid.ant-btn-disabled {
-      color: var(--sign-in-up-text-color) !important;
-    }
+      /* Dark Light Mode */
+      .light-dark-btn {
+        background: none;
+        border: none;
+        outline: none;
+        border-radius: 9999px;
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 4px;
+      }
+      .light-dark-btn:hover {
+        background-color: rgba(35, 39, 47, 0.05);
+      }
 
-    .sign-in-up {
-      height: 32px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 0px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-      background: black;
-      color: white;
-      font-weight: 500;
-      border: none;
-    }
-    .sign-in-up:disabled {
-      background: #f4f4f4;
-      background: var(--sign-in-up);
-      color: var(--text-color);
-      border: var(--border-color);
-    }
-
-    /* Dark Light Mode */
-    .light-dark-btn {
-      background: none;
-      border: none;
-      outline: none;
-      border-radius: 9999px;
-      cursor: pointer;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 4px;
-    }
-    .light-dark-btn:hover {
-      background-color: rgba(35, 39, 47, 0.05);
+      .display-name * {
+        font-family: "SF Mono", monospace;
+        font-weight: 800;
+      }
     }
   }
 }

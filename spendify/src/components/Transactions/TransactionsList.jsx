@@ -10,7 +10,7 @@ import {
   query,
   startAfter,
 } from "firebase/firestore";
-import { db } from "../../firebase";
+import { db, auth } from "../../firebase";
 import {
   Button,
   ConfigProvider,
@@ -38,16 +38,34 @@ class TransactionsList extends Component {
       lastVisibleDocs: [],
       totalItems: 0,
       searchQuery: "",
+      userId: null,
     };
   }
 
   componentDidMount() {
-    this.fetchPaginatedData(1);
+    this.authUnsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        this.setState({ userId: user.uid }, () => {
+          this.fetchPaginatedData(1);
+        });
+      } else {
+        console.error("User is not authenticated.");
+      }
+    });
   }
 
-  fetchPaginatedData = async (page) => {
-    const { pageSize, lastVisibleDocs } = this.state;
-    const transactionsCollection = collection(db, "transactions");
+  fetchPaginatedData = (page) => {
+    const { pageSize, lastVisibleDocs, userId } = this.state;
+
+    if (!userId) {
+      console.error("No authenticated user found.");
+      return;
+    }
+
+    const transactionsCollection = collection(
+      db,
+      `users/${userId}/transactions`
+    );
 
     try {
       let transactionQuery;
@@ -59,16 +77,19 @@ class TransactionsList extends Component {
           limit(pageSize)
         );
 
-        const totalSnapshot = await getDocs(transactionsCollection);
-        const totalTransactionsData = totalSnapshot.docs.map((doc) => ({
-          id: doc.id,
-          transactionDocId: doc.id,
-          ...doc.data(),
-        }));
-        this.setState({
-          totalItems: totalSnapshot.size,
-          allTransactions: totalTransactionsData,
-          allTransactionDatas: totalTransactionsData,
+        const totalQuery = query(transactionsCollection);
+
+        this.unsubscribeTotal = onSnapshot(totalQuery, (snapshot) => {
+          const totalTransactionsData = snapshot.docs.map((doc) => ({
+            id: doc.id,
+            transactionDocId: doc.id,
+            ...doc.data(),
+          }));
+          this.setState({
+            totalItems: snapshot.size,
+            allTransactions: totalTransactionsData,
+            allTransactionDatas: totalTransactionsData,
+          });
         });
       } else {
         const lastVisible = lastVisibleDocs[page - 2];
@@ -80,31 +101,36 @@ class TransactionsList extends Component {
         );
       }
 
-      const transactionSnapshot = await getDocs(transactionQuery);
-      const transactionsData = transactionSnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
+      this.unsubscribePaginated = onSnapshot(transactionQuery, (snapshot) => {
+        const transactionsData = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
 
-      const lastDoc =
-        transactionSnapshot.docs[transactionSnapshot.docs.length - 1];
+        const lastDoc = snapshot.docs[snapshot.docs.length - 1];
 
-      this.setState((prevState) => {
-        const updatedLastVisibleDocs = [...prevState.lastVisibleDocs];
-        if (page > updatedLastVisibleDocs.length) {
-          updatedLastVisibleDocs.push(lastDoc);
-        }
+        this.setState((prevState) => {
+          const updatedLastVisibleDocs = [...prevState.lastVisibleDocs];
+          if (page > updatedLastVisibleDocs.length) {
+            updatedLastVisibleDocs.push(lastDoc);
+          }
 
-        return {
-          transactions: transactionsData,
-          currentPage: page,
-          lastVisibleDocs: updatedLastVisibleDocs,
-        };
-      }, this.updateCategories);
+          return {
+            transactions: transactionsData,
+            currentPage: page,
+            lastVisibleDocs: updatedLastVisibleDocs,
+          };
+        }, this.updateCategories);
+      });
     } catch (error) {
       console.error("Error fetching paginated data:", error.message);
     }
   };
+
+  componentWillUnmount() {
+    if (this.unsubscribeTotal) this.unsubscribeTotal();
+    if (this.unsubscribePaginated) this.unsubscribePaginated();
+  }
 
   handlePageChange = (page) => {
     this.setState({ currentPage: page }, () => {
@@ -112,10 +138,10 @@ class TransactionsList extends Component {
     });
   };
 
-  componentWillUnmount() {
-    if (this.incomesUnsubscribe) this.incomesUnsubscribe();
-    if (this.expensesUnsubscribe) this.expensesUnsubscribe();
-  }
+  // componentWillUnmount() {
+  //   if (this.incomesUnsubscribe) this.incomesUnsubscribe();
+  //   if (this.expensesUnsubscribe) this.expensesUnsubscribe();
+  // }
 
   updateCategories = () => {
     const uniqueCategories = this.state.transactions

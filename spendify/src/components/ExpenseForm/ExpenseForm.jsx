@@ -8,7 +8,7 @@ import {
   query,
   where,
 } from "firebase/firestore";
-import { db } from "../../firebase";
+import { db, auth } from "../../firebase";
 import {
   Button,
   Checkbox,
@@ -22,10 +22,11 @@ import {
   Space,
   TreeSelect,
   Segmented,
+  message,
 } from "antd";
 import dayjs from "dayjs";
 
-const dateFormat = "YYYY/MM/DD";
+const dateFormat = "DD/MM/YYYY";
 
 class ExpenseForm extends Component {
   constructor(props) {
@@ -71,6 +72,8 @@ class ExpenseForm extends Component {
   }
 
   onFinish = async (values) => {
+    const user = auth.currentUser.uid;
+
     const formattedValues = {
       ...values,
       id: crypto.randomUUID(),
@@ -82,7 +85,7 @@ class ExpenseForm extends Component {
     localStorage.setItem("transactions", JSON.stringify(data));
 
     try {
-      await addDoc(collection(db, "transactions"), data);
+      await addDoc(collection(db, `users/${user}/transactions`), data);
       const { closeModalOnSubmit } = this.props;
       if (closeModalOnSubmit) closeModalOnSubmit();
       message.success("Expense Added Successfully!");

@@ -6,7 +6,7 @@ import {
   UserOutlined,
   VideoCameraOutlined,
 } from "@ant-design/icons";
-import { Button, Layout, Menu, theme } from "antd";
+import { Button, Layout, Menu, theme, Spin, Flex } from "antd";
 const { Header, Sider, Content } = Layout;
 import {
   Routes,
@@ -40,18 +40,43 @@ import Login from "./Pages/Login/Login";
 
 function App() {
   const [collapsed, setCollapsed] = useState(false);
+  const [authChecked, setAuthChecked] = useState(false);
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
 
   const navigate = useNavigate();
 
-  React.useEffect(() => {
+  useEffect(() => {
     const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
-    if (isLoggedIn && window.location.pathname === "/") {
+
+    if (isLoggedIn) {
       navigate("/home");
+    } else {
+      navigate("/");
     }
-  }, []);
+
+    setAuthChecked(true);
+  }, [navigate]);
+
+  const contentStyle = {
+    padding: 50,
+    background: "rgba(0, 0, 0, 0.05)",
+    borderRadius: 4,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
+    height: "100vh",
+  };
+
+  if (!authChecked) {
+    return (
+      <Flex style={contentStyle} fullscreen="true">
+        <Spin size="large"></Spin>
+      </Flex>
+    );
+  }
 
   return (
     <Layout>
@@ -110,6 +135,7 @@ function App() {
             padding: 0,
             background: colorBgContainer,
             display: "flex",
+            alignItems: "center",
             justifyContent: "space-between",
             borderBottom: "1px solid #d9d9d9",
           }}

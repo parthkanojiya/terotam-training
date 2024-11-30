@@ -8,7 +8,7 @@ import {
   updateDoc,
   doc,
 } from "firebase/firestore";
-import { db } from "../../firebase";
+import { db, auth } from "../../firebase";
 import {
   Button,
   Input,
@@ -38,7 +38,9 @@ class EditIncomeForm extends Component {
   }
 
   componentDidMount() {
-    const categoriesCollection = collection(db, "categories");
+    const user = auth.currentUser.uid;
+    const categoriesCollection = collection(db, `users/${user}/categories`);
+
     this.unsubscribeCategories = onSnapshot(
       categoriesCollection,
       (snapshot) => {
@@ -78,6 +80,7 @@ class EditIncomeForm extends Component {
 
   onFinish = async (values) => {
     const { incomeData, closeModalOnSubmit } = this.props;
+    const user = auth.currentUser.uid;
 
     const formattedValues = {
       ...values,
@@ -86,13 +89,17 @@ class EditIncomeForm extends Component {
 
     try {
       if (incomeData?.id) {
-        const docRef = doc(db, "transactions", incomeData.transactionDocId);
+        const docRef = doc(
+          db,
+          `users/${user}/transactions`,
+          incomeData.transactionDocId
+        );
         await updateDoc(docRef, formattedValues);
         message.success("Income updated successfully!");
       } else {
         const id = crypto.randomUUID();
         const data = { ...formattedValues, id };
-        await addDoc(collection(db, "transactions"), data);
+        await addDoc(collection(db, `users/${user}/transactions`), data);
         message.success("Income added successfully!");
       }
     } catch (error) {

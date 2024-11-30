@@ -19,6 +19,7 @@ import Categories from "./Pages/Categories/Categories.jsx";
 import Incomes from "./Pages/Incomes/Incomes.jsx";
 import Expenses from "./Pages/Expenses/Expenses.jsx";
 import Transactions from "./Pages/Transactions/Transactions.jsx";
+import { UserProvider } from "./UserContext.jsx";
 
 const ProtectedRoute = ({ children }) => {
   const navigate = useNavigate();
@@ -58,8 +59,10 @@ const appRouter = createBrowserRouter([
 
 createRoot(document.getElementById("root")).render(
   <ThemeProvider>
-    <StrictMode>
-      <RouterProvider router={appRouter} />
-    </StrictMode>
+    <UserProvider>
+      <StrictMode>
+        <RouterProvider router={appRouter} />
+      </StrictMode>
+    </UserProvider>
   </ThemeProvider>
 );

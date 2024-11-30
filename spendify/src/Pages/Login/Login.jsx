@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import "./style.less";
 import "../../global.less";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
@@ -13,10 +13,14 @@ import {
 import { auth } from "../../firebase.js";
 import Password from "antd/es/input/Password";
 import { Navigate, useNavigate } from "react-router-dom";
+import UserContext from "../../UserContext.jsx";
 
 const Login = () => {
   const [isSignInForm, setIsSignInForm] = useState(true);
   const [formValue, setFormValue] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const { setUserData } = useContext(UserContext);
+
   const [form] = Form.useForm();
 
   const navigate = useNavigate();
@@ -24,6 +28,7 @@ const Login = () => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
+        localStorage.setItem("isLoggedIn", "true");
         navigate("/home");
       }
     });
@@ -35,36 +40,48 @@ const Login = () => {
     setIsSignInForm(!isSignInForm);
   };
 
-  const onFinish = (values) => {
-    setFormValue(values);
-
+  const onFinish = async (values) => {
     if (!isSignInForm) {
       // Sign Up logic
-      createUserWithEmailAndPassword(auth, values.email, values.password)
-        .then((userCredential) => {
-          const user = userCredential.user;
-          updateProfile(user, {
-            displayName: values.name,
-          });
-        })
-        .catch((error) => {
-          const errorCode = error.code;
-          const errorMessage = error.message;
+      try {
+        const userCredential = await createUserWithEmailAndPassword(
+          auth,
+          values.email,
+          values.password
+        );
+
+        const user = userCredential.user;
+
+        await updateProfile(user, {
+          displayName: values.name,
         });
+
+        const userDetails = {
+          email: user.email,
+          displayName: values.name,
+        };
+
+        localStorage.setItem("isLoggedIn", "true");
+        setUserData(userDetails);
+        navigate("/home");
+      } catch (error) {
+        console.error("Error during sign-up:", error.message);
+      }
     } else {
       // Sign In Logic
-      signInWithEmailAndPassword(auth, values.email, values.password)
-        .then((userCredential) => {
-          const user = userCredential.user;
-          console.log(user);
-          localStorage.setItem("isLoggedIn", "true");
-          navigate("/home");
-        })
-        .catch((error) => {
-          const errorCode = error.code;
-          const errorMessage = error.message;
-          console.log(errorCode, errorMessage);
-        });
+      try {
+        const userCredential = await signInWithEmailAndPassword(
+          auth,
+          values.email,
+          values.password
+        );
+
+        const user = userCredential.user;
+        localStorage.setItem("isLoggedIn", "true");
+        navigate("/home");
+      } catch (error) {
+        console.error("Error during login:", error.message);
+      }
     }
   };
 

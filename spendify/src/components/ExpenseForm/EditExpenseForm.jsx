@@ -10,7 +10,7 @@ import {
   updateDoc,
   doc,
 } from "firebase/firestore";
-import { db } from "../../firebase";
+import { db, auth } from "../../firebase";
 import {
   Button,
   Checkbox,
@@ -86,6 +86,7 @@ class EditExpenseForm extends Component {
 
   onFinish = async (values) => {
     const { expenseData, closeModalOnSubmit } = this.props;
+    const user = auth.currentUser.uid;
 
     const formattedValues = {
       ...values,
@@ -94,13 +95,17 @@ class EditExpenseForm extends Component {
 
     try {
       if (expenseData?.id) {
-        const docRef = doc(db, "transactions", expenseData.transactionDocId);
+        const docRef = doc(
+          db,
+          `users/${user}/transactions`,
+          expenseData.transactionDocId
+        );
         await updateDoc(docRef, formattedValues);
         message.success("Expense updated successfully!");
       } else {
         const id = crypto.randomUUID();
         const data = { ...formattedValues, id };
-        await addDoc(collection(db, "transactions"), data);
+        await addDoc(collection(db, `users/${user}/transactions`), data);
         message.success("Expense added successfully!");
       }
     } catch (error) {

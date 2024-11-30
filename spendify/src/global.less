@@ -17,6 +17,9 @@
   --box-shadow: 0 1px 1px rgba(0, 0, 0, 0.12), 0 2px 2px rgba(0, 0, 0, 0.12);
   --sign-in-up: #f4f4f4;
   --sign-in-up-text-color: lightgray;
+  --disabled-bg: #f4f4f4;
+  --disabled-border: 1px solid #d9d9d9;
+  --disabled-text: #afafaf;
 }
 
 [data-theme="dark"] {
@@ -31,6 +34,9 @@
   --box-shadow: 0 0 0 1px rgb(255 255 255 / 10%);
   --sign-in-up: #001122;
   --sign-in-up-text-color: lightgray;
+  --disabled-bg: #374151;
+  --disabled-border: 1px solid #575757;
+  --disabled-text: #888888;
 }
 
 body {
@@ -150,8 +156,9 @@ li {
 }
 
 .logo-name {
+  font-family: "SF Mono", monospace;
   font-size: 24px;
-  font-weight: bold;
+  font-weight: 900;
   color: #fff;
 }
 
@@ -171,16 +178,14 @@ li {
   background-color: #c1c1c1;
 }
 
-// :where(.css-dev-only-do-not-override-apn68).ant-table-wrapper
-//   .ant-table-thead
-//   > tr
-//   > th,
-// :where(.css-dev-only-do-not-override-apn68).ant-table-wrapper
-//   .ant-table-thead
-//   > tr
-//   > td {
-//   background: #ededed !important;
-// }
+:where(.css-apn68).ant-layout.ant-layout-has-sider > .ant-layout,
+:where(.css-apn68).ant-layout.ant-layout-has-sider > .ant-layout-content {
+  background: var(--layout-bg) !important;
+}
+
+:where(.css-dev-only-do-not-override-apn68).ant-layout-sider {
+  box-shadow: var(--box-shadow) !important;
+}
 
 :where(.css-dev-only-do-not-override-apn68).ant-layout {
   background: var(--layout-bg) !important;
@@ -216,6 +221,13 @@ li {
   background: var(--table-th) !important;
 }
 
+:where(.css-apn68).ant-table-wrapper .ant-table-tbody > tr > th,
+:where(.css-apn68).ant-table-wrapper .ant-table-tbody > tr > td {
+  background: var(--table-th) !important;
+  border-bottom: var(--border-bottom) !important;
+  color: var(--text-color) !important;
+}
+
 :where(.css-dev-only-do-not-override-apn68).ant-table-wrapper
   .ant-table-tbody
   > tr
@@ -236,4 +248,37 @@ li {
   .ant-pagination-item
   a {
   color: var(--text-color);
+}
+
+:where(.css-dev-only-do-not-override-apn68).ant-table-wrapper
+  .ant-table-thead
+  > tr
+  > th,
+:where(.css-dev-only-do-not-override-apn68).ant-table-wrapper
+  .ant-table-thead
+  > tr
+  > td {
+  font-family: "SF Mono", monospace;
+  font-weight: bold;
+}
+
+:where(.css-dev-only-do-not-override-apn68).ant-table-wrapper
+  .ant-table-column-title {
+  font-family: "SF Mono", monospace;
+  font-weight: bold;
+}
+
+:where(.css-dev-only-do-not-override-apn68).ant-table-wrapper
+  .ant-table-thead
+  > tr
+  > th:not(:last-child):not(.ant-table-selection-column):not(
+    .ant-table-row-expand-icon-cell
+  ):not([colspan])::before,
+:where(.css-dev-only-do-not-override-apn68).ant-table-wrapper
+  .ant-table-thead
+  > tr
+  > td:not(:last-child):not(.ant-table-selection-column):not(
+    .ant-table-row-expand-icon-cell
+  ):not([colspan])::before {
+  background-color: #778899 !important;
 }
