@@ -49,14 +49,11 @@ function App() {
 
   useEffect(() => {
     const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
-
-    if (isLoggedIn) {
-      navigate("/home");
+    if (!isLoggedIn) {
+      navigate("/login");
     } else {
-      navigate("/");
+      setAuthChecked(true);
     }
-
-    setAuthChecked(true);
   }, [navigate]);
 
   const contentStyle = {
@@ -81,7 +78,7 @@ function App() {
   return (
     <Layout>
       <Sider trigger={null} collapsible collapsed={collapsed}>
-        <Link to="/home" className="demo-logo-vertical">
+        <Link to="/" className="demo-logo-vertical">
           <FcMoneyTransfer style={{ fontSize: "2rem", margin: "0.8rem" }} />
           {collapsed === true ? (
             ""
@@ -97,32 +94,32 @@ function App() {
           onClick={({ key }) => navigate(key)}
           items={[
             {
-              key: "/home",
+              key: "/",
               icon: <FaHome />,
               label: "Home",
             },
             {
-              key: "/home/dashboard",
+              key: "dashboard",
               icon: <MdDashboard />,
               label: "Dashboard",
             },
             {
-              key: "/home/categories",
+              key: "categories",
               icon: <BiCategoryAlt />,
               label: "Categories",
             },
             {
-              key: "/home/incomes",
+              key: "incomes",
               icon: <GiReceiveMoney />,
               label: "Incomes",
             },
             {
-              key: "/home/expenses",
+              key: "expenses",
               icon: <GiPayMoney />,
               label: "Expenses",
             },
             {
-              key: "/home/transactions",
+              key: "transactions",
               icon: <CiViewList />,
               label: "Transactions",
             },

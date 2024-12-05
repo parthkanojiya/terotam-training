@@ -27,7 +27,7 @@ const ProtectedRoute = ({ children }) => {
   useEffect(() => {
     const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
     if (!isLoggedIn) {
-      navigate("/");
+      navigate("/login");
     }
   }, [navigate]);
 
@@ -36,11 +36,11 @@ const ProtectedRoute = ({ children }) => {
 
 const appRouter = createBrowserRouter([
   {
-    path: "/",
+    path: "/login",
     element: <Login />,
   },
   {
-    path: "/home",
+    path: "/",
     element: (
       <ProtectedRoute>
         <App />

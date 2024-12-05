@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Funnel+Sans:ital,wght@0,300..800;1,300..800&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+
+    <main class="container">
+
+        <b class="main-challenge">HTML Coding Challenges</b>
+
+        <!-- HTML Coding Challenge 1  -->
+        <b class="challenge">HTML Coding Challenge 1:- Create a webpage with a heading, a paragraph, and an image.</b>
+
+        <div class="coding-challenge-1">
+            <h1>Heading: This is the main heading</h1>
+
+            <p>Paragraph: Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor.
+                Aenean
+                massa. Cum
+                sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.</p>
+
+            <img src="https://picsum.photos/id/182/2896/1944" alt="windfield" class="challenge-1">
+        </div>
+
+        <!-- HTML Coding Challenge 2  -->
+
+        <b class="challenge">HTML Coding Challenge 2:- Create a paragraph where some text is bold, italicized, and
+            underlined. and Use the
+            tag to highlight text in a paragraph. </b>
+
+        <p>React apps are made out of components. <b>A component is a piece of the UI (user interface)</b> that has its
+            own
+            logic and appearance. <i>A component can be as small as a button, or as large as an entire page.</i>
+
+            <mark>React components are JavaScript functions that return markup:</mark>
+        </p>
+
+
+        <!-- HTML Coding Challenge 3  -->
+
+        <b class="challenge">HTML Coding Challenge 3:- Create a nested unordered list of grocery categories
+            (e.g.,Fruits,
+            Vegetables, Dairy). and Create an ordered list of your top 5 favorite movies. </b>
+
+        <h2>Nested unordered list</h2>
+
+        <ul>
+
+            <ul>
+                <li>Fruits
+                    <ul>
+                        <li>Apples</li>
+                        <li>Bananas</li>
+                        <li>Berries</li>
+                    </ul>
+                </li>
+                <li>Vegetables
+                    <ul>
+                        <li>Carrots</li>
+                        <li>Broccoli</li>
+                        <li>Spinach</li>
+                    </ul>
+                </li>
+            </ul>
+            </li>
+
+
+            <ul>
+                <li>Dairy
+                    <ul>
+                        <li>Cheese</li>
+                        <li>Milk</li>
+                        <li>Ice-Cream</li>
+                    </ul>
+                </li>
+            </ul>
+
+        </ul>
+
+        <h2 style="margin: 1rem 0;">Top 5 Favorite Movies</h2>
+        <ol>
+            <li>The Shawshank Redemption</li>
+            <li>The Godfather</li>
+            <li>The Dark Knight</li>
+            <li>Pulp Fiction</li>
+            <li>Forrest Gump</li>
+        </ol>
+
+        <!-- HTML Coding Challenge 4  -->
+
+        <b class="challenge">HTML Coding Challenge 4:- Create a navigation bar with links to "Home," "About," and
+            "Contact" sections.and Add a
+            link to download a file using the download attribute. </b>
+
+        <div>
+            <nav>
+                <a href="#">Home</a>
+                <a href="#">About</a>
+                <a href="#">Contact</a>  
+
+                <a href="https://drive.google.com/uc?export=download&id=0B1HGRRvviV5hc3RhcnRlcl9maWxl"
+                    download="PDF">Download File</a>
+            </nav>
+        </div>
+
+        <!-- HTML Coding Challenge 5  -->
+
+        <b class="challenge">HTML Coding Challenge 5:- Create a contact form with name, email, and message fields. and
+            Add validation to an HTML
+            form to ensure the email field is not left empty. </b>
+
+        <div class="coding-challenge-5">
+            <h2>Contact Us</h2>
+            <div class="coding-challenge-contact-form">
+
+                <form id="contactForm">
+                    <label for="name">Name:</label>
+                    <input type="text" id="contact-name" name="name" required placeholder="Enter name">
+
+                    <label for="email">Email:</label>
+                    <input type="email" id="contact-email" name="email" required placeholder="Enter email">
+                    <div class="error" id="emailError">Email is required.</div>
+
+                    <label for=" message">Message:</label><br>
+                    <textarea id="contact-message" name="message" rows="5" required></textarea><br>
+
+                    <button type="submit" class="contact-btn">Send Message</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- HTML Coding Challenge 6  -->
+
+        <b class="challenge">HTML Coding Challenge 6:- Create an HTML form with fields for name, email, password, and a
+            submit button. and
+            Create a table to display student data (name, age, and grade).</b>
+
+        <div class="coding-challenge-2">
+            <h2>Student Registration Form</h2>
+            <div class="coding-challenge-form">
+
+                <form id="studentForm">
+                    <label for="name" class="student-lable">Name:</label><br>
+                    <input type="text" id="name" name="name" required placeholder="Enter Name"><br>
+
+                    <label for="email" class="student-lable">Email:</label><br>
+                    <input type="email" id="email" name="email" required placeholder="Enter Email"><br>
+
+                    <label for="password" class="student-lable">Password:</label><br>
+                    <input type="password" id="password" name="password" required placeholder="Enter Password"><br>
+
+                    <label for="age" class="student-lable">Age:</label><br>
+                    <input type="number" id="age" name="age" required placeholder="Enter Age"><br>
+
+                    <label for="grade" class="student-lable">Grade:</label><br>
+                    <input type="text" id="grade" name="grade" required placeholder="Enter Grade"><br>
+
+                    <button type="submit" class="coding-challenge-btn">Submit</button>
+                </form>
+            </div>
+
+            <h2>Student Data</h2>
+            <table id="studentTable" style="display: none;">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Age</th>
+                        <th>Grade</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                </tbody>
+            </table>
+
+        </div>
+
+
+        <!-- HTML Coding Challenge 7  -->
+
+        <b class="challenge">HTML Coding Challenge 7:- Create a table displaying employee data (name, department,
+            salary). Add a footer row to a
+            table to calculate
+            the total salary. </b>
+
+        <h2>Employee Data</h2>
+        <table id="employeeTable">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Department</th>
+                    <th>Salary</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>John Doe</td>
+                    <td>Engineering</td>
+                    <td>50000</td>
+                </tr>
+                <tr>
+                    <td>Jane Smith</td>
+                    <td>Marketing</td>
+                    <td>60000</td>
+                </tr>
+                <tr>
+                    <td>Sam Wilson</td>
+                    <td>Sales</td>
+                    <td>45000</td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="2">Total Salary</td>
+                    <td id="totalSalary">0</td>
+                </tr>
+            </tfoot>
+        </table>
+
+        <!-- HTML Coding Challenge 8  -->
+        <b class="challenge">HTML Coding Challenge 8:- Embed a video with custom controls. </b>
+
+        <video id="myVideo" width="320" height="240" controls>
+            <source src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4" type="video/mp4">
+        </video>
+
+        <div class="controls">
+            <button id="playPause">Play/Pause</button>
+            <button id="muteUnmute">Mute/Unmute</button>
+        </div>
+
+        <!-- HTML Coding Challenge 9  -->
+        <b class="challenge">HTML Coding Challenge 9:- Add background music to a webpage using the "audio" tag. </b>
+
+        <audio id="backgroundMusic" autoplay loop>
+            <source src="https://interactive-examples.mdn.mozilla.net/media/cc0-audio/t-rex-roar.mp3" type="audio/mpeg">
+        </audio>
+        <button id="playPauseBtn">Play</button>
+
+
+        <!-- CSS Coding Challenges  -->
+
+        <b class="main-challenge">CSS Coding Challenges</b>
+
+        <!-- CSS Coding Challenge 1   -->
+        <b class="challenge">CSS Coding Challenge 1:- Style a paragraph with a border, padding, and margin.
+            Create a button with hover and active states. </b>
+
+        <div>
+            <p class="css-challenge-para">This is a paragraph with a border, padding, and margin.</p>
+            <button class="css-challenge-btn">Click me</button>
+        </div>
+
+        <!-- CSS Coding Challenge 2   -->
+        <b class="challenge">CSS Coding Challenge 2:- Create a flex container with three items equally spaced.</b>
+
+        <div>
+            <div class="flex-items">
+                <div class="item">Item 1</div>
+                <div class="item">Item 2</div>
+                <div class="item">Item 3</div>
+            </div>
+        </div>
+
+        <!-- CSS Coding Challenge 3   -->
+        <b class="challenge">CSS Coding Challenge 3:- Create a responsive navigation bar using Flexbox. </b>
+
+        <nav class="navbar">
+            <a href="#">Logo</a>
+            <ul>
+                <li><a href="#">Home</a></li>
+                <li><a href="#">About</a></li>
+                <li><a href="#">Services</a></li>
+                <li><a href="#">Contact</a></li>
+            </ul>
+        </nav>
+
+        <!-- CSS Coding Challenge 4   -->
+        <b class="challenge">CSS Coding Challenge 4:- Create a simple 2x3 grid layout with Grid CSS. </b>
+        <div>
+            <div class="grid-container">
+                <div class="grid-item">Item 1</div>
+                <div class="grid-item">Item 2</div>
+                <div class="grid-item">Item 3</div>
+                <div class="grid-item">Item 4</div>
+                <div class="grid-item">Item 5</div>
+                <div class="grid-item">Item 6</div>
+            </div>
+        </div>
+
+        <!-- CSS Coding Challenge 5   -->
+
+        <b class="challenge">CSS Coding Challenge 5:- Create a responsive card layout using Grid. </b>
+
+        <div>
+            <div class="card-container">
+                <div class="card">
+                    <img src="https://picsum.photos/id/182/2896/1944" alt="Card 1">
+                    <h2>Card 1</h2>
+                    <p>This is card 1.</p>
+                </div>
+                <div class="card">
+                    <img src="https://picsum.photos/id/182/2896/1944" alt="Card 2">
+                    <h2>Card 2</h2>
+                    <p>This is card 2.</p>
+                </div>
+                <div class="card">
+                    <img src="https://picsum.photos/id/182/2896/1944" alt="Card 3">
+                    <h2>Card 3</h2>
+                    <p>This is card 3.</p>
+                </div>
+            </div>
+        </div>
+
+
+
+    </main>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

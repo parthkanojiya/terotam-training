@@ -31,11 +31,11 @@ const MainHeader = () => {
         const userDetails = { email, displayName };
         localStorage.setItem("userData", JSON.stringify(userDetails));
         setUserData(userDetails);
-        navigate("/home");
+        navigate("/");
       } else {
         localStorage.removeItem("userData");
         setUserData(null);
-        navigate("/");
+        navigate("/login");
       }
       setLoading(false);
     });
@@ -47,8 +47,9 @@ const MainHeader = () => {
     signOut(auth)
       .then(() => {
         localStorage.removeItem("userData");
+        localStorage.removeItem("isLoggedIn");
         setUserData(null);
-        navigate("/");
+        navigate("/login");
       })
       .catch((error) => {
         navigate("/error");

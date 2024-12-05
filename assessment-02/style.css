@@ -1,0 +1,346 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Funnel Sans", sans-serif;
+}
+
+body {
+  padding: 1rem;
+}
+
+.container {
+  max-width: 1200px;
+  width: 100%;
+  margin: auto;
+}
+
+.main-challenge {
+  background: yellow;
+  margin: 2rem 0;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 1rem;
+  font-size: 28px;
+  font-weight: 900;
+}
+
+.challenge {
+  background: greenyellow;
+  margin: 2rem 0;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 1rem;
+  font-size: 18px;
+}
+
+/* coding-challenge 1 */
+
+.coding-challenge-1 {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.challenge-1 {
+  max-width: 100%;
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+  border-radius: 1rem;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-top: 20px;
+}
+
+th,
+td {
+  border: 1px solid #ccc;
+  text-align: left;
+  padding: 8px;
+}
+
+th {
+  background-color: #f4f4f4;
+}
+
+/* coding-challenge 2 */
+
+.coding-challenge-2 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.coding-challenge-form {
+  width: 400px;
+  padding: 20px;
+  border-radius: 6px;
+  box-shadow: 2px 1px 21px -9px rgba(0, 0, 0, 0.38);
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+}
+
+#studentForm {
+  background-color: white;
+}
+.student-lable {
+  font-weight: bold;
+}
+
+#name,
+#email,
+#password,
+#age,
+#grade {
+  width: 100%;
+  padding: 15px;
+  margin: 5px 0 22px 0;
+  display: inline-block;
+  border: none;
+  background: #f7f7f7;
+}
+
+.coding-challenge-btn {
+  background-color: #0eb7f4;
+  color: white;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  opacity: 0.9;
+  font-size: 16px;
+  border-radius: 10px;
+}
+
+/* coding-challenge 3 */
+
+ul {
+  padding-left: 0;
+}
+li {
+  margin-bottom: 10px;
+}
+ul ul {
+  margin-left: 20px;
+}
+
+/* coding-challenge 4  */
+
+nav {
+  background-color: #333;
+  overflow: hidden;
+}
+
+nav a {
+  float: left;
+  display: block;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+nav a:hover {
+  background-color: #ddd;
+  color: black;
+}
+
+/* coding-challenge 5 */
+
+.coding-challenge-5 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.coding-challenge-contact-form {
+  width: 400px;
+  padding: 20px;
+  border-radius: 6px;
+  box-shadow: 2px 1px 21px -9px rgba(0, 0, 0, 0.38);
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+}
+
+#contact-name,
+#contact-email,
+#contact-message {
+  width: 100%;
+  padding: 15px;
+  margin: 5px 0 22px 0;
+  display: inline-block;
+  border: none;
+  background: #f7f7f7;
+}
+
+.contact-btn {
+  background-color: #0eb7f4;
+  color: white;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  opacity: 0.9;
+  font-size: 16px;
+  border-radius: 10px;
+}
+
+.error {
+  color: red;
+  font-size: 14px;
+  margin-top: -10px;
+  margin-bottom: 10px;
+  display: none;
+}
+
+#playPause,
+#muteUnmute,
+#playPauseBtn {
+  background-color: #0eb7f4;
+  color: white;
+  padding: 8px 14px;
+  margin: 8px 0;
+  border: none;
+  cursor: pointer;
+  opacity: 0.9;
+  font-size: 14px;
+  border-radius: 2rem;
+}
+
+/* CSS Challanges */
+
+.css-challenge-para {
+  border: 2px solid black;
+  padding: 10px;
+  margin: 20px;
+}
+
+.css-challenge-btn {
+  background-color: #007bff;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+
+/* Button hover  */
+.css-challenge-btn:hover {
+  background-color: #0056b3;
+}
+
+/* Button active */
+.css-challenge-btn:active {
+  background-color: #003870;
+  box-shadow: 0 5px #666;
+  transform: translateY(4px);
+}
+
+.flex-items {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  gap: 1rem;
+}
+
+.item {
+  border: 1px solid black;
+  padding: 20px;
+  width: 100%;
+  height: 200px;
+  border-radius: 6px;
+  background: lightskyblue;
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #012;
+  color: #fff;
+  padding: 4px;
+  border-radius: 3rem;
+}
+
+.navbar ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+}
+
+.navbar li {
+  margin-right: 20px;
+  margin-bottom: 0;
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+  }
+
+  .navbar ul {
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: center;
+  }
+
+  .navbar li {
+    margin-bottom: 10px;
+    margin-right: 0;
+  }
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
+  gap: 10px;
+}
+
+.grid-item {
+  border: 1px solid black;
+  padding: 20px;
+  text-align: center;
+}
+
+.card-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.card {
+  border: 1px solid #ccc;
+  padding: 20px;
+  text-align: center;
+}
+
+.card img {
+  width: 100%;
+  height: auto;
+}
+
+@media (max-width: 768px) {
+  .card-container {
+    grid-template-columns: 1fr;
+  }
+}

@@ -26,21 +26,18 @@ const Login = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        localStorage.setItem("isLoggedIn", "true");
-        navigate("/home");
-      }
-    });
-
-    return () => unsubscribe();
-  }, [auth, navigate]);
+    const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+    if (isLoggedIn) {
+      navigate("/");
+    }
+  }, [navigate]);
 
   const toggleSignInForm = () => {
     setIsSignInForm(!isSignInForm);
   };
 
   const onFinish = async (values) => {
+    setLoading(true);
     if (!isSignInForm) {
       // Sign Up logic
       try {
@@ -63,9 +60,10 @@ const Login = () => {
 
         localStorage.setItem("isLoggedIn", "true");
         setUserData(userDetails);
-        navigate("/home");
+        navigate("/");
       } catch (error) {
         console.error("Error during sign-up:", error.message);
+        setLoading(false);
       }
     } else {
       // Sign In Logic
@@ -78,9 +76,10 @@ const Login = () => {
 
         const user = userCredential.user;
         localStorage.setItem("isLoggedIn", "true");
-        navigate("/home");
+        navigate("/");
       } catch (error) {
         console.error("Error during login:", error.message);
+        setLoading(false);
       }
     }
   };
