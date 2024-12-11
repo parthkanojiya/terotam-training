@@ -1,233 +1,150 @@
-import React, { Component } from "react";
-import "../../global.less";
-import "./style.less";
-import ExpenseForm from "../../components/ExpenseForm/ExpenseForm";
-import EditExpenseForm from "../../components/ExpenseForm/EditExpenseForm";
+import React, { useEffect, useCallback, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import {
   Button,
   message,
   Popconfirm,
   Modal,
-  Select,
-  Space,
   Table,
-  Tag,
+  Space,
+  Input,
   ConfigProvider,
-  theme,
 } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import {
+  setExpenses,
+  addExpense,
+  deleteExpense,
+  editExpense,
+  setTotalItems,
+  setCategories,
+} from "../../redux/actions/expenseActions";
+import { db, auth } from "../../firebase";
+import {
   collection,
-  addDoc,
-  getDocs,
-  onSnapshot,
   query,
   where,
-  doc,
-  deleteDoc,
-  QuerySnapshot,
-  writeBatch,
-  getDoc,
   orderBy,
   limit,
   startAfter,
+  onSnapshot,
+  deleteDoc,
+  doc,
+  getDocs,
 } from "firebase/firestore";
-import { db, auth } from "../../firebase";
+import ExpenseForm from "../../components/ExpenseForm/ExpenseForm";
+import EditExpenseForm from "../../components/ExpenseForm/EditExpenseForm";
 import Search from "antd/es/transfer/search";
 
-class Expenses extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      isModalOpen: false,
-      isEditModalOpen: false,
-      expenses: [],
-      allExpenses: [],
-      allExpenseDatas: [],
-      categories: [],
-      selectedCategory: "",
-      selectedExpense: [],
-      currentPage: 1,
-      pageSize: 10,
-      lastVisible: null,
-      totalItems: 0,
-      searchQuery: "",
-    };
-  }
+const Expenses = () => {
+  const dispatch = useDispatch();
+  const { expenses, totalItems, categories } = useSelector(
+    (state) => state.expenses
+  );
 
-  componentDidMount() {
-    this.fetchPaginatedData();
-  }
+  const [allExpenses, setAllExpenses] = useState(expenses);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedExpense, setSelectedExpense] = useState(null);
+  const [lastVisible, setLastVisible] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10;
+  const [user, setUser] = useState(null);
 
-  /*  fetchPaginatedData = async (page = 1) => {
-    const { pageSize, lastVisible } = this.state;
-    const user = auth.currentUser.uid;
+  const unsubscribeTotal = useRef(null);
+  const unsubscribePaginated = useRef(null);
 
-    const transactionsCollection = collection(db, `users/${user}/transactions`);
-
-    try {
-      let expenseQuery;
-
-      if (page === 1) {
-        expenseQuery = query(
-          transactionsCollection,
-          where("type", "==", "expense"),
-          orderBy("date", "desc"),
-          limit(pageSize)
-        );
-
-        const totalQuery = query(
-          transactionsCollection,
-          where("type", "==", "expense")
-        );
-        const totalSnapshot = await getDocs(totalQuery);
-        const totalTransactionsData = totalSnapshot.docs.map((doc) => ({
-          id: doc.id,
-          transactionDocId: doc.id,
-          ...doc.data(),
-        }));
-        this.setState({
-          totalItems: totalSnapshot.size,
-          allExpenseDatas: totalTransactionsData,
-        });
+  useEffect(() => {
+    const unsubscribeAuth = auth.onAuthStateChanged((user) => {
+      if (user) {
+        fetchPaginatedData();
       } else {
-        expenseQuery = query(
-          transactionsCollection,
-          where("type", "==", "expense"),
-          orderBy("date", "desc"),
-          startAfter(lastVisible),
-          limit(pageSize)
-        );
+        message.error("User not authenticated");
       }
+    });
 
-      const expenseSnapshot = await getDocs(expenseQuery);
+    return () => {
+      unsubscribeAuth();
+      if (unsubscribeTotal.current) unsubscribeTotal.current();
+      if (unsubscribePaginated.current) unsubscribePaginated.current();
+    };
+  }, []);
 
-      const transactionsData = expenseSnapshot.docs.map((doc) => ({
-        id: doc.id,
-        transactionDocId: doc.id,
-        ...doc.data(),
-      }));
+  const fetchPaginatedData = useCallback(
+    async (page = 1) => {
+      const user = auth.currentUser.uid;
+      const transactionsCollection = collection(
+        db,
+        `users/${user}/transactions`
+      );
 
-      const lastDoc = expenseSnapshot.docs[expenseSnapshot.docs.length - 1];
+      try {
+        let expenseQuery;
 
-      this.setState((prevState) => ({
-        expenses:
-          page === 1
-            ? transactionsData
-            : [...prevState.expenses, ...transactionsData],
-        allExpenses: transactionsData,
-        lastVisible: lastDoc,
-        currentPage: page,
-        categories: this.getUniqueCategories(transactionsData),
-      }));
-    } catch (error) {
-      console.error("Error fetching paginated data:", error.message);
-    }
-  }; */
+        if (page === 1) {
+          expenseQuery = query(
+            transactionsCollection,
+            where("type", "==", "expense"),
+            orderBy("date", "desc"),
+            limit(pageSize)
+          );
 
-  fetchPaginatedData = async (page = 1) => {
-    const { pageSize, lastVisible } = this.state;
-    const user = auth.currentUser.uid;
+          const totalQuery = query(
+            transactionsCollection,
+            where("type", "==", "expense")
+          );
 
-    const transactionsCollection = collection(db, `users/${user}/transactions`);
+          unsubscribeTotal.current = onSnapshot(totalQuery, (snapshot) => {
+            const totalTransactionsData = snapshot.docs.map((doc) => ({
+              id: doc.id,
+              transactionDocId: doc.id,
+              ...doc.data(),
+            }));
+            dispatch(setTotalItems(snapshot.size));
+            dispatch(setTotalItems(totalTransactionsData));
+          });
+        } else {
+          expenseQuery = query(
+            transactionsCollection,
+            where("type", "==", "expense"),
+            orderBy("date", "desc"),
+            startAfter(lastVisible),
+            limit(pageSize)
+          );
+        }
 
-    try {
-      let expenseQuery;
-
-      if (page === 1) {
-        expenseQuery = query(
-          transactionsCollection,
-          where("type", "==", "expense"),
-          orderBy("date", "desc"),
-          limit(pageSize)
-        );
-
-        const totalQuery = query(
-          transactionsCollection,
-          where("type", "==", "expense")
-        );
-
-        this.unsubscribeTotal = onSnapshot(totalQuery, (snapshot) => {
-          const totalTransactionsData = snapshot.docs.map((doc) => ({
+        unsubscribePaginated.current = onSnapshot(expenseQuery, (snapshot) => {
+          const transactionsData = snapshot.docs.map((doc) => ({
             id: doc.id,
             transactionDocId: doc.id,
             ...doc.data(),
           }));
 
-          this.setState({
-            totalItems: snapshot.size,
-            allExpenseDatas: totalTransactionsData,
-          });
+          const lastDoc = snapshot.docs[snapshot.docs.length - 1];
+
+          setExpenses(
+            page === 1 ? transactionsData : [...expenses, ...transactionsData]
+          );
+          setLastVisible(lastDoc);
+          dispatch(setExpenses(transactionsData));
+          dispatch(setCategories(getUniqueCategories(transactionsData)));
+          setAllExpenses(expenses);
+          setCurrentPage(page);
         });
-      } else {
-        expenseQuery = query(
-          transactionsCollection,
-          where("type", "==", "expense"),
-          orderBy("date", "desc"),
-          startAfter(lastVisible),
-          limit(pageSize)
-        );
+      } catch (error) {
+        console.error("Error fetching paginated data:", error.message);
       }
+    },
+    [pageSize, lastVisible, dispatch]
+  );
 
-      this.unsubscribePaginated = onSnapshot(expenseQuery, (snapshot) => {
-        const transactionsData = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          transactionDocId: doc.id,
-          ...doc.data(),
-        }));
-
-        const lastDoc = snapshot.docs[snapshot.docs.length - 1];
-
-        this.setState((prevState) => ({
-          expenses:
-            page === 1
-              ? transactionsData
-              : [...prevState.incomes, ...transactionsData],
-          allExpenses: transactionsData,
-          lastVisible: lastDoc,
-          currentPage: page,
-          categories: this.getUniqueCategories(transactionsData),
-        }));
-      });
-    } catch (error) {
-      console.error("Error fetching paginated data:", error.message);
-    }
-  };
-
-  componentWillUnmount() {
-    if (this.unsubscribeTotal) this.unsubscribeTotal();
-    if (this.unsubscribePaginated) this.unsubscribePaginated();
-  }
-
-  handlePageChange = (page) => {
-    this.setState({ currentPage: page }, () => {
-      this.fetchPaginatedData(page);
-    });
-  };
-
-  componentWillUnmount() {
-    if (this.unsubscribe) this.unsubscribe();
-    if (this.unsubscribeCategories) this.unsubscribeCategories();
-  }
-
-  toggleModal = (isOpen) => {
-    this.setState({ isModalOpen: isOpen });
-  };
-
-  toggleEditModal = (isOpen) => {
-    this.setState({
-      isEditModalOpen: isOpen,
-      selectedExpense: isOpen ? this.state.selectedExpense : null,
-    });
-  };
-
-  getUniqueCategories = (data) => {
+  const getUniqueCategories = (data) => {
     const categoryOptions = data
       .filter((item) => item.type === "expense")
       .map((item) => ({
         id: item.id,
         value: item.category,
-        lable: item.category,
+        label: item.category,
       }));
 
     return categoryOptions.filter(
@@ -236,66 +153,37 @@ class Expenses extends Component {
     );
   };
 
-  handleCategoryChange = (value) => {
-    this.setState({ selectedCategory: value });
-
-    if (value) {
-      const filteredExpenseItems = this.state.allExpenses.filter(
-        (item) => item.category === value
-      );
-      this.setState({ expenses: filteredExpenseItems });
-    } else {
-      this.setState({ expenses: this.state.allExpenses });
-    }
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    fetchPaginatedData(page);
   };
 
-  handleEdit = (data) => {
-    const { transactionDocId, name, category, date, type, amount } = data;
-    this.setState({
-      selectedExpense: { ...data },
-      isEditModalOpen: true,
-    });
-  };
-
-  deleteExpense = async (id) => {
+  const deleteIncomeHandler = async (id) => {
     const user = auth.currentUser.uid;
     try {
-      const expenseDocRef = doc(db, `users/${user}/transactions`, id);
-      await deleteDoc(expenseDocRef);
-      this.setState((prevState) => ({
-        expenses: prevState.expenses.filter((expense) => expense.id !== id),
-        allExpenses: prevState.allExpenses.filter(
-          (expense) => expense.id !== id
-        ),
-      }));
+      const incomeDocRef = doc(db, `users/${user}/transactions`, id);
+      await deleteDoc(incomeDocRef);
+      dispatch(deleteExpense(id));
       message.success("Item Deleted Successfully");
     } catch (error) {
       console.error("Error deleting income:", error.message);
     }
   };
 
-  handleEdit = (data) => {
-    const { transactionDocId, name, category, date, type, amount } = data;
-    this.setState({
-      selectedExpense: { ...data },
-      isEditModalOpen: true,
-    });
+  const handleEdit = (expense) => {
+    setSelectedExpense(expense);
+    setIsEditModalOpen(true);
   };
 
-  onSearch = (value) => {
-    const { allExpenseDatas, pageSize } = this.state;
+  const onSearch = (value) => {
     const searchQuery = value.target.value.trim().toLowerCase();
 
     if (!searchQuery) {
-      this.setState({
-        expenses: allExpenseDatas.slice(0, pageSize),
-        currentPage: 1,
-        totalItems: allExpenseDatas.length,
-      });
+      dispatch(setExpenses(allExpenses.slice(0, pageSize)));
       return;
     }
 
-    const filteredExpenses = allExpenseDatas.filter((expense) => {
+    const filteredExpenses = allExpenses.filter((expense) => {
       const expenseData = [
         expense.name.toLowerCase(),
         expense.type.toLowerCase(),
@@ -304,172 +192,138 @@ class Expenses extends Component {
       ];
       return expenseData.some((data) => data.includes(searchQuery));
     });
-
-    this.setState({
-      expenses: filteredExpenses,
-      currentPage: 1,
-      totalItems: filteredExpenses.length,
-    });
+    dispatch(setExpenses(filteredIncomes));
   };
 
-  render() {
-    const {
-      isModalOpen,
-      isEditModalOpen,
-      expenses,
-      categories,
-      selectedCategory,
-      selectedExpense,
-      currentPage,
-      pageSize,
-      totalItems,
-      searchQuery,
-    } = this.state;
+  const toggleModal = (isOpen) => {
+    setIsModalOpen(isOpen);
+  };
 
-    const columns = [
-      {
-        key: "name",
-        title: "Name",
-        dataIndex: "name",
-        sorter: (a, b) => a.name.length - b.name.length,
-        sortDirections: ["descend", "ascend"],
-      },
-      {
-        key: "type",
-        title: "Type",
-        dataIndex: "type",
-      },
-      {
-        key: "category",
-        title: "Category",
-        dataIndex: "category",
-        filters: categories.map((cat) => ({
-          text: cat.value,
-          value: cat.value,
-        })),
-        onFilter: (value, record) => record.category === value,
-      },
-      {
-        key: "date",
-        title: "Date",
-        dataIndex: "date",
-        sorter: (a, b) => a.date.localeCompare(b.date),
-        sortDirections: ["descend", "ascend"],
-      },
-      {
-        key: "amount",
-        title: "Amount",
-        dataIndex: "amount",
-        sorter: (a, b) => a.amount - b.amount,
-        sortDirections: ["descend", "ascend"],
-      },
-      {
-        key: "action",
-        title: "Action",
-        dataIndex: "action",
-        render: (_, record) => {
-          return (
-            <>
-              <EditOutlined
-                style={{ fontSize: "16px", cursor: "pointer" }}
-                onClick={() => this.handleEdit(record)}
-              />
-              <Popconfirm
-                title="Delete the task"
-                description="Are you sure to delete this item?"
-                onConfirm={() => this.deleteExpense(record.transactionDocId)}
-                okText="Yes"
-                cancelText="No"
-              >
-                <DeleteOutlined
-                  style={{
-                    fontSize: "16px",
-                    cursor: "pointer",
-                    marginLeft: "10px",
-                  }}
-                />
-              </Popconfirm>
-            </>
-          );
-        },
-      },
-    ];
+  return (
+    <section className="expenses-page-section">
+      <div className="transaction-wrapper">
+        <Space direction="vertical" style={{ padding: "0 0 1rem 0" }}>
+          <Search placeholder="Search expenses" onChange={onSearch} />
+        </Space>
 
-    return (
-      <section className="expenses-page-section">
-        <div className="transaction-wrapper">
-          <ConfigProvider
-            theme={{
-              algorithm: theme.defaultAlgorithm,
-            }}
+        <div className="transactions-heading flex justify-between item-center">
+          <h3>Expenses</h3>
+          <Button
+            type="primary"
+            onClick={() => toggleModal(true)}
+            style={{ marginBottom: 20 }}
           >
-            <Space direction="vertical" style={{ padding: "0 0 1rem 0" }}>
-              <Search placeholder="Search expenses" onChange={this.onSearch} />
-            </Space>
-          </ConfigProvider>
-          <div className="transactions-heading flex justify-between item-center">
-            <h3>Expenses</h3>
-            <div className="flex justify-between item-center gap-4">
-              <button
-                className="import-csv"
-                onClick={() => this.toggleModal(true)}
-              >
-                Add Expense
-              </button>
-            </div>
-          </div>
+            Add Expense
+          </Button>
+        </div>
 
-          {/* Add Expense Modal */}
+        <Modal
+          title="Add Expense"
+          open={isModalOpen}
+          onOk={() => setIsModalOpen(false)}
+          onCancel={() => setIsModalOpen(false)}
+          footer={null}
+          style={{ maxWidth: 400 }}
+        >
+          <ExpenseForm closeModalOnSubmit={() => setIsModalOpen(false)} />
+        </Modal>
 
-          <Modal
-            title="Add Expense"
-            footer={false}
-            open={isModalOpen}
-            onOk={() => this.toggleModal(false)}
-            onCancel={() => this.toggleModal(false)}
-            style={{ maxWidth: 400 }}
-          >
-            <ExpenseForm closeModalOnSubmit={() => this.toggleModal(false)} />
-          </Modal>
+        <Modal
+          title="Edit Expense"
+          open={isEditModalOpen}
+          onOk={() => setIsEditModalOpen(false)}
+          onCancel={() => setIsEditModalOpen(false)}
+          footer={null}
+          style={{ maxWidth: 400 }}
+        >
+          <EditExpenseForm
+            expenseData={selectedExpense}
+            closeModalOnSubmit={() => setIsEditModalOpen(false)}
+          />
+        </Modal>
 
-          {/* Edit Expense Modal */}
-          <Modal
-            title="Edit Expense"
-            footer={false}
-            open={isEditModalOpen}
-            onOk={() => this.toggleEditModal(false)}
-            onCancel={() => this.toggleEditModal(false)}
-            style={{ maxWidth: 400 }}
-          >
-            <EditExpenseForm
-              expenseData={selectedExpense}
-              closeModalOnSubmit={() => this.toggleEditModal(false)}
+        <div className="table">
+          <div className="table_component" role="region" tabIndex="0">
+            <Table
+              columns={[
+                {
+                  key: "name",
+                  title: "Name",
+                  dataIndex: "name",
+                  sorter: (a, b) => a.name.localeCompare(b.name),
+                  sortDirections: ["descend", "ascend"],
+                },
+                {
+                  key: "type",
+                  title: "Type",
+                  dataIndex: "type",
+                },
+                {
+                  key: "category",
+                  title: "Category",
+                  dataIndex: "category",
+                  filters: categories.map((cat) => ({
+                    text: cat.value,
+                    value: cat.value,
+                  })),
+                  onFilter: (value, record) => record.category === value,
+                },
+
+                {
+                  key: "date",
+                  title: "Date",
+                  dataIndex: "date",
+                  sorter: (a, b) => a.date.localeCompare(b.date),
+                  sortDirections: ["descend", "ascend"],
+                },
+                {
+                  key: "amount",
+                  title: "Amount",
+                  dataIndex: "amount",
+                  sorter: (a, b) => a.amount - b.amount,
+                  sortDirections: ["descend", "ascend"],
+                },
+                {
+                  key: "action",
+                  title: "Action",
+                  render: (_, record) => (
+                    <>
+                      <EditOutlined
+                        style={{ fontSize: "16px", cursor: "pointer" }}
+                        onClick={() => handleEdit(record)}
+                      />
+                      <Popconfirm
+                        title="Delete?"
+                        onConfirm={() =>
+                          deleteIncomeHandler(record.transactionDocId)
+                        }
+                      >
+                        <DeleteOutlined
+                          style={{
+                            fontSize: "16px",
+                            cursor: "pointer",
+                            marginLeft: "10px",
+                          }}
+                        />
+                      </Popconfirm>
+                    </>
+                  ),
+                },
+              ]}
+              rowKey="transactionDocId"
+              dataSource={expenses}
+              pagination={{
+                current: currentPage,
+                pageSize,
+                total: totalItems,
+                onChange: handlePageChange,
+              }}
             />
-          </Modal>
-
-          <div className="table">
-            <div className="table_component" role="region" tabIndex="0">
-              <Table
-                columns={columns}
-                dataSource={expenses}
-                rowKey="id"
-                pagination={
-                  searchQuery
-                    ? false
-                    : {
-                        current: currentPage,
-                        pageSize,
-                        total: totalItems,
-                        onChange: this.handlePageChange,
-                      }
-                }
-              />
-            </div>
           </div>
         </div>
-      </section>
-    );
-  }
-}
+      </div>
+    </section>
+  );
+};
 
 export default Expenses;

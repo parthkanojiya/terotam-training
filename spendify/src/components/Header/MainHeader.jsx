@@ -13,52 +13,38 @@ import { useNavigate } from "react-router-dom";
 import { auth } from "../../firebase.js";
 import UserContext from "../../UserContext.jsx";
 
+import { useSelector, useDispatch } from "react-redux";
+import { clearUserData, setUserData } from "../../redux/actions/userActions.js";
+
 const MainHeader = () => {
   const { theme, toggleTheme } = useContext(ThemeContext);
-  const { userData, setUserData } = useContext(UserContext);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+
+  const dispatch = useDispatch();
+
+  const userData = useSelector((state) => state.user.userData);
 
   useEffect(() => {
     const storedUserData = localStorage.getItem("userData");
     if (storedUserData) {
-      setUserData(JSON.parse(storedUserData));
-    }
-
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        const { email, displayName } = user;
-        const userDetails = { email, displayName };
-        localStorage.setItem("userData", JSON.stringify(userDetails));
-        setUserData(userDetails);
-        navigate("/");
-      } else {
-        localStorage.removeItem("userData");
-        setUserData(null);
-        navigate("/login");
-      }
+      const userDetails = JSON.parse(storedUserData);
+      dispatch(setUserData(userDetails));
       setLoading(false);
-    });
-
-    return () => unsubscribe();
-  }, [navigate]);
-
-  const handleSignOut = () => {
-    signOut(auth)
-      .then(() => {
-        localStorage.removeItem("userData");
-        localStorage.removeItem("isLoggedIn");
-        setUserData(null);
-        navigate("/login");
-      })
-      .catch((error) => {
-        navigate("/error");
-      });
-  };
+    }
+  }, [dispatch]);
 
   if (loading) {
     return <div>Loading user data...</div>;
   }
+
+  const handleSignOut = () => {
+    dispatch(clearUserData());
+    localStorage.removeItem("isLoggedIn");
+    localStorage.removeItem("userData");
+    localStorage.removeItem("categoryState");
+    navigate("/login");
+  };
 
   return (
     <header>
@@ -69,9 +55,9 @@ const MainHeader = () => {
           </button>
           <p className="display-name">
             {userData?.displayName ? (
-              <span>
+              <span style={{ display: "flex", alignItems: "center" }}>
                 Welcome,{" "}
-                <b style={{ fontSize: "18px" }}>{userData.displayName}</b>
+                <b style={{ fontSize: "14px" }}>{userData.displayName}</b>
               </span>
             ) : (
               ""

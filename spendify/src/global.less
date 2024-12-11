@@ -4,6 +4,9 @@
   box-sizing: border-box;
   -webkit-font-smoothing: antialiased;
 }
+:root {
+  --font-sf-mono: "SF Mono", monospace;
+}
 
 /* Theme Variables */
 [data-theme="light"] {
@@ -156,7 +159,7 @@ li {
 }
 
 .logo-name {
-  font-family: "SF Mono", monospace;
+  font-family: var(--font-sf-mono);
   font-size: 24px;
   font-weight: 900;
   color: #fff;
@@ -235,6 +238,7 @@ li {
   background-color: var(--bg-color) !important;
   color: var(--text-color) !important;
   border-bottom: var(--border-bottom) !important;
+  font-family: var(--font-sf-mono);
 }
 
 :where(.css-dev-only-do-not-override-apn68).ant-pagination
@@ -258,13 +262,13 @@ li {
   .ant-table-thead
   > tr
   > td {
-  font-family: "SF Mono", monospace;
+  font-family: var(--font-sf-mono);
   font-weight: bold;
 }
 
 :where(.css-dev-only-do-not-override-apn68).ant-table-wrapper
   .ant-table-column-title {
-  font-family: "SF Mono", monospace;
+  font-family: var(--font-sf-mono);
   font-weight: bold;
 }
 
@@ -281,4 +285,11 @@ li {
     .ant-table-row-expand-icon-cell
   ):not([colspan])::before {
   background-color: #778899 !important;
+}
+
+:where(.css-dev-only-do-not-override-apn68).ant-input-affix-wrapper
+  > input.ant-input,
+:where(.css-dev-only-do-not-override-apn68).ant-input-affix-wrapper
+  > textarea.ant-input {
+  font-family: var(--font-sf-mono);
 }

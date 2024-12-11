@@ -75,8 +75,6 @@ class PieCharts extends PureComponent {
   }
 
   render() {
-    const { expenses } = this.state;
-
     return this.state.expenses.length === 0 ? (
       <Empty
         image={Empty.PRESENTED_IMAGE_SIMPLE}
@@ -91,22 +89,13 @@ class PieCharts extends PureComponent {
         >
           <Pie
             dataKey="value"
-            isAnimationActive={false}
+            isAnimationActive={true}
             data={this.state.expenses}
             cx="50%"
             cy="50%"
             outerRadius={80}
             fill="#8884d8"
             label
-          />
-          <Pie
-            dataKey="value"
-            data={expenses}
-            cx={500}
-            cy={200}
-            innerRadius={40}
-            outerRadius={80}
-            fill="#82ca9d"
           />
           <Tooltip />
         </PieChart>

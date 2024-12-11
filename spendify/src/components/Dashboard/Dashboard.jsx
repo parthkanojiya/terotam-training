@@ -13,6 +13,11 @@ class Dashboard extends Component {
     this.state = {
       transaction: [],
       userId: null,
+      totals: {
+        totalIncome: 0,
+        totalExpense: 0,
+        totalTransactionSum: 0,
+      },
     };
   }
 
@@ -31,7 +36,10 @@ class Dashboard extends Component {
             id: doc.id,
             ...doc.data(),
           }));
-          this.setState({ transaction: transactionsData });
+          this.setState(
+            { transaction: transactionsData },
+            this.calculateTotals
+          );
         });
       } else {
         console.error("User is not authenticated.");
@@ -44,12 +52,12 @@ class Dashboard extends Component {
     if (this.authUnsubscribe) this.authUnsubscribe();
   }
 
-  render() {
+  calculateTotals = () => {
     const { transaction } = this.state;
 
     // Total Income Sum
-    const filtered = transaction.filter((i) => i.type !== "expense");
-    const totalIncome = filtered.reduce(
+    const filteredIncome = transaction.filter((i) => i.type !== "expense");
+    const totalIncome = filteredIncome.reduce(
       (sum, item) => sum + Number(item.amount),
       0
     );
@@ -61,17 +69,30 @@ class Dashboard extends Component {
       0
     );
 
-    const totalTransactionSum = Number(totalIncome) + Number(totalExpense);
+    const totalTransactionSum = totalIncome + totalExpense;
+
+    this.setState({
+      totals: {
+        totalIncome,
+        totalExpense,
+        totalTransactionSum,
+      },
+    });
+  };
+
+  render() {
+    const { totals } = this.state;
 
     return (
       <section className="dashboard-section">
         <Row style={{ alignItems: "center", padding: "4px 0" }} gutter={[8, 8]}>
           {/* Total Transactions */}
-          <Col span={8}>
+          {/* <Col span={8}> */}
+          <Col xs={24} sm={12} md={8} lg={8} xl={8}>
             <div className="card total-transaction">
               <span className="card-heading">Total Transactions</span>
               <h3 className="amount card-amount">
-                ₹{totalTransactionSum.toLocaleString()}
+                ₹{totals.totalTransactionSum.toLocaleString()}
               </h3>
               <div>
                 <h3 className="amount"></h3>
@@ -84,14 +105,15 @@ class Dashboard extends Component {
           </Col>
 
           {/* Income */}
-          <Col span={8}>
+          {/* <Col span={8}> */}
+          <Col xs={24} sm={12} md={8} lg={8} xl={8}>
             <div className="card income">
               <div className="flex item-center justify-between">
                 <span className="card-heading">Income</span>
                 <span className="add-btn"></span>
               </div>
               <h3 className="amount card-amount">
-                ₹{totalIncome.toLocaleString()}
+                ₹{totals.totalIncome.toLocaleString()}
               </h3>
               {/* <h3 className="amountx">{totalExpense}</h3> */}
               <div>
@@ -107,14 +129,15 @@ class Dashboard extends Component {
           </Col>
 
           {/* Expenses */}
-          <Col span={8}>
+          {/* <Col span={8}> */}
+          <Col xs={24} sm={12} md={8} lg={8} xl={8}>
             <div className="card expense">
               <div className="flex item-center justify-between">
                 <span className="card-heading">Expenses</span>
                 <span className="add-btn"></span>
               </div>
               <h3 className="amount card-amount">
-                ₹{totalExpense.toLocaleString()}
+                ₹{totals.totalExpense.toLocaleString()}
               </h3>
               {/* <h3 className="amountx">{totalExpense}</h3> */}
               <div>
@@ -133,14 +156,16 @@ class Dashboard extends Component {
         {/* 2nd Row Start */}
         <Row style={{ alignItems: "center", padding: "4px 0" }} gutter={[8, 8]}>
           {/* Chart */}
-          <Col span={16}>
+          {/* <Col span={16}> */}
+          <Col xs={24} sm={24} md={16} lg={16} xl={16}>
             <div className="card" style={{ height: "350px" }}>
               <FinanceChart />
             </div>
           </Col>
 
           {/* All Expenses */}
-          <Col span={8}>
+          {/* <Col span={8}> */}
+          <Col xs={24} sm={24} md={8} lg={8} xl={8}>
             <div className="card all-expenses" style={{ height: "350px" }}>
               <div className="expense-head">
                 <h3 className="card-heading">All Expenses</h3>
@@ -149,7 +174,7 @@ class Dashboard extends Component {
               <div className="pie-category flex item-center justify-between width-full gap-4">
                 {[
                   ...new Set(
-                    transaction
+                    this.state.transaction
                       .filter((item) => item.type !== "income")
                       .map((item) => item.category)
                   ),
@@ -157,7 +182,7 @@ class Dashboard extends Component {
                   .slice(0, 4)
                   .map((category, index) => (
                     <ul className="flex flex-column gap-4" key={index}>
-                      <li className="food">{category}</li>
+                      <li className="category">{category}</li>
                     </ul>
                   ))}
               </div>

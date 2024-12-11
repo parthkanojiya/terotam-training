@@ -1,29 +1,17 @@
 import React, { Component } from "react";
 import "../../global.less";
 import "./style.less";
-import { collection, addDoc, getDocs, onSnapshot } from "firebase/firestore";
+import { collection, addDoc, onSnapshot } from "firebase/firestore";
 import { db, auth } from "../../firebase";
-import {
-  Button,
-  Checkbox,
-  Input,
-  Cascader,
-  DatePicker,
-  Form,
-  InputNumber,
-  Mentions,
-  Select,
-  Space,
-  TreeSelect,
-  Segmented,
-} from "antd";
+import { Form, Input } from "antd";
+import { connect } from "react-redux";
+import { addCategory } from "../../redux/actions/categoryActions";
 
 class CategoryForm extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      categories: [],
       userId: null,
     };
   }
@@ -47,7 +35,7 @@ class CategoryForm extends Component {
         id: doc.id,
         ...doc.data(),
       }));
-      this.setState({ categories: categoriesData });
+      this.props.setCategories(categoriesData);
     });
   }
 
@@ -69,6 +57,7 @@ class CategoryForm extends Component {
 
     try {
       await addDoc(collection(db, `users/${user}/categories`), data);
+      this.props.addCategory(data);
     } catch (error) {
       console.error("Error adding document to Firestore: ", error);
     }
@@ -127,4 +116,8 @@ class CategoryForm extends Component {
   }
 }
 
-export default CategoryForm;
+const mapDispatchToProps = {
+  addCategory,
+};
+
+export default connect(null, mapDispatchToProps)(CategoryForm);

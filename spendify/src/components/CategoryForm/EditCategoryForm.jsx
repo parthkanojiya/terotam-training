@@ -1,36 +1,24 @@
 import React, { Component, createRef } from "react";
 import "../../global.less";
 import "./style.less";
-import {
-  collection,
-  addDoc,
-  onSnapshot,
-  updateDoc,
-  doc,
-} from "firebase/firestore";
+import { collection, addDoc, updateDoc, doc } from "firebase/firestore";
 import { db, auth } from "../../firebase";
+import { Form, Input, message } from "antd";
+import { connect } from "react-redux";
 import {
-  Button,
-  Input,
-  Select,
-  DatePicker,
-  Form,
-  InputNumber,
-  message,
-} from "antd";
+  addCategory,
+  updateCategory,
+} from "../../redux/actions/categoryActions";
 
 class EditCategoryForm extends Component {
   constructor(props) {
     super(props);
 
     this.formRef = createRef();
+  }
 
-    this.state = {
-      categories: [],
-      name: props.categoryData?.name || "",
-    };
-
-    // this.formRef.current?.setFieldsValue(initialValues);
+  componentDidMount() {
+    this.setInitialFormValues();
   }
 
   componentDidUpdate(prevProps) {
@@ -42,33 +30,35 @@ class EditCategoryForm extends Component {
   setInitialFormValues = () => {
     const { categoryData } = this.props;
 
-    const initialValues = {
-      name: categoryData?.name || "",
-    };
-
-    this.formRef.current?.setFieldsValue(initialValues);
+    if (categoryData && this.formRef.current) {
+      this.formRef.current?.setFieldsValue({
+        name: categoryData.name,
+      });
+    }
   };
 
   onFinish = async (values) => {
-    const { categoryData, closeModalOnSubmit } = this.props;
+    const { categoryData, closeModalOnSubmit, addCategory, updateCategory } =
+      this.props;
     const user = auth.currentUser.uid;
 
     const categoryName = { ...values };
 
     try {
-      if (categoryData?.id) {
-        // const docRef = doc(db, "categories", categoryData.categoryDocId);
+      if (categoryData?.categoryDocId) {
         const docRef = doc(
           db,
           `users/${user}/categories`,
           categoryData.categoryDocId
         );
         await updateDoc(docRef, categoryName);
+        updateCategory({ ...categoryData, ...categoryName });
         message.success("Category updated successfully!");
       } else {
         const id = crypto.randomUUID();
         const data = { ...categoryName, id };
         await addDoc(collection(db, `users/${user}/categories`), data);
+        addCategory(data);
         message.success("Category added successfully!");
       }
     } catch (error) {
@@ -113,4 +103,9 @@ class EditCategoryForm extends Component {
   }
 }
 
-export default EditCategoryForm;
+const mapDispatchToProps = {
+  addCategory,
+  updateCategory,
+};
+
+export default connect(null, mapDispatchToProps)(EditCategoryForm);

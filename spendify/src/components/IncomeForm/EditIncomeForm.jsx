@@ -1,4 +1,4 @@
-import React, { Component, createRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "../../global.less";
 import "./style.less";
 import {
@@ -19,69 +19,67 @@ import {
   message,
 } from "antd";
 import dayjs from "dayjs";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  addIncome,
+  editIncome,
+  setCategories,
+} from "../../redux/actions/incomeActions";
 
 const dateFormat = "DD/MM/YYYY";
 
-class EditIncomeForm extends Component {
-  constructor(props) {
-    super(props);
+const EditIncomeForm = ({ incomeData, closeModalOnSubmit }) => {
+  const dispatch = useDispatch();
+  const formRef = useRef();
+  const [initialValues, setInitialValues] = useState({
+    name: incomeData?.name || "",
+    category: incomeData?.category || "",
+    amount: incomeData?.amount || "",
+    date: incomeData?.date ? dayjs(incomeData.date, dateFormat) : null,
+  });
 
-    this.formRef = createRef();
+  const categories = useSelector((state) => state.category.categories);
 
-    this.state = {
-      categories: [],
-      name: props.incomeData?.name || "",
-      category: props.incomeData?.category || "",
-      amount: props.incomeData?.amount || "",
-      date: props.incomeData?.date || null,
-    };
-  }
-
-  componentDidMount() {
+  useEffect(() => {
     const user = auth.currentUser.uid;
     const categoriesCollection = collection(db, `users/${user}/categories`);
 
-    this.unsubscribeCategories = onSnapshot(
+    const unsubscribeCategories = onSnapshot(
       categoriesCollection,
       (snapshot) => {
         const categoriesData = snapshot.docs.map((doc) => ({
           value: doc.data().name,
           label: doc.data().name,
         }));
-        this.setState({ categories: categoriesData });
+
+        dispatch(setCategories(categoriesData));
       }
     );
 
-    this.setInitialFormValues();
-  }
+    return () => {
+      unsubscribeCategories();
+    };
+  }, [dispatch]);
 
-  componentDidUpdate(prevProps) {
-    if (prevProps.incomeData !== this.props.incomeData) {
-      this.setInitialFormValues();
-    }
-  }
-
-  componentWillUnmount() {
-    if (this.unsubscribeCategories) this.unsubscribeCategories();
-  }
-
-  setInitialFormValues = () => {
-    const { incomeData } = this.props;
-
-    const initialValues = {
+  useEffect(() => {
+    setInitialValues({
       name: incomeData?.name || "",
       amount: incomeData?.amount || "",
       category: incomeData?.category || "",
+      type: "income",
       date: incomeData?.date ? dayjs(incomeData.date, dateFormat) : null,
-    };
+    });
+    formRef.current?.setFieldsValue({
+      name: incomeData?.name || "",
+      amount: incomeData?.amount || "",
+      type: "income",
+      category: incomeData?.category || "",
+      date: incomeData?.date ? dayjs(incomeData.date, dateFormat) : null,
+    });
+  }, [incomeData]);
 
-    this.formRef.current?.setFieldsValue(initialValues);
-  };
-
-  onFinish = async (values) => {
-    const { incomeData, closeModalOnSubmit } = this.props;
+  const onFinish = async (values) => {
     const user = auth.currentUser.uid;
-
     const formattedValues = {
       ...values,
       date: values.date ? dayjs(values.date).format(dateFormat) : null,
@@ -95,11 +93,13 @@ class EditIncomeForm extends Component {
           incomeData.transactionDocId
         );
         await updateDoc(docRef, formattedValues);
+        dispatch(editIncome(incomeData.id, formattedValues));
         message.success("Income updated successfully!");
       } else {
         const id = crypto.randomUUID();
         const data = { ...formattedValues, id };
         await addDoc(collection(db, `users/${user}/transactions`), data);
+        dispatch(addIncome(data));
         message.success("Income added successfully!");
       }
     } catch (error) {
@@ -107,80 +107,65 @@ class EditIncomeForm extends Component {
       message.error("Failed to update/add income.");
     }
 
-    this.formRef.current?.resetFields();
+    formRef.current?.resetFields();
     if (closeModalOnSubmit) closeModalOnSubmit();
   };
 
-  onFinishFailed = (errorInfo) => {
+  const onFinishFailed = (errorInfo) => {
     console.error("Failed:", errorInfo);
   };
 
-  render() {
-    const { categories } = this.state;
-
-    return (
-      <Form
-        ref={this.formRef}
-        name="editIncomeForm"
-        labelCol={{ span: 6 }}
-        wrapperCol={{ span: 16 }}
-        style={{ maxWidth: 600 }}
-        onFinish={this.onFinish}
-        onFinishFailed={this.onFinishFailed}
-        autoComplete="off"
+  return (
+    <Form
+      ref={formRef}
+      name="editIncomeForm"
+      labelCol={{ span: 6 }}
+      wrapperCol={{ span: 16 }}
+      style={{ maxWidth: 600 }}
+      onFinish={onFinish}
+      onFinishFailed={onFinishFailed}
+      initialValues={initialValues}
+      autoComplete="off"
+    >
+      <Form.Item
+        label="Name"
+        name="name"
+        rules={[{ required: true, message: "Please input your name!" }]}
       >
-        <Form.Item
-          label="Name"
-          name="name"
-          rules={[{ required: true, message: "Please input your name!" }]}
-        >
-          <Input placeholder="Enter name" style={{ width: "100%" }} />
-        </Form.Item>
+        <Input placeholder="Enter name" style={{ width: "100%" }} />
+      </Form.Item>
 
-        <Form.Item
-          label="Amount"
-          name="amount"
-          rules={[{ required: true, message: "Please input your Amount!" }]}
-        >
-          <InputNumber placeholder="Enter amount" style={{ width: "100%" }} />
-        </Form.Item>
+      <Form.Item
+        label="Amount"
+        name="amount"
+        rules={[{ required: true, message: "Please input your Amount!" }]}
+      >
+        <InputNumber placeholder="Enter amount" style={{ width: "100%" }} />
+      </Form.Item>
 
-        <Form.Item label="Type" name="type" rules={[{ required: true }]}>
-          <Select
-            placeholder="Select type"
-            allowClear
-            options={[{ value: "income", label: "income" }]}
-          />
-        </Form.Item>
+      <Form.Item label="Type" name="type" rules={[{ required: true }]}>
+        <Select
+          placeholder="Select type"
+          allowClear
+          options={[{ value: "income", label: "income" }]}
+        />
+      </Form.Item>
 
-        <Form.Item
-          label="Category"
-          name="category"
-          rules={[{ required: true }]}
-        >
-          <Select
-            placeholder="Select category"
-            allowClear
-            options={categories}
-          />
-        </Form.Item>
+      <Form.Item label="Category" name="category" rules={[{ required: true }]}>
+        <Select placeholder="Select category" allowClear options={categories} />
+      </Form.Item>
 
-        <Form.Item label="Date" name="date" rules={[{ required: true }]}>
-          <DatePicker format={dateFormat} />
-        </Form.Item>
+      <Form.Item label="Date" name="date" rules={[{ required: true }]}>
+        <DatePicker format={dateFormat} />
+      </Form.Item>
 
-        <Form.Item>
-          <Button
-            type="primary"
-            htmlType="submit"
-            style={{ marginLeft: "88px" }}
-          >
-            Submit
-          </Button>
-        </Form.Item>
-      </Form>
-    );
-  }
-}
+      <Form.Item>
+        <Button type="primary" htmlType="submit" style={{ marginLeft: "88px" }}>
+          Submit
+        </Button>
+      </Form.Item>
+    </Form>
+  );
+};
 
 export default EditIncomeForm;

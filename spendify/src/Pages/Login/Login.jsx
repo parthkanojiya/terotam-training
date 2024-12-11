@@ -15,15 +15,31 @@ import Password from "antd/es/input/Password";
 import { Navigate, useNavigate } from "react-router-dom";
 import UserContext from "../../UserContext.jsx";
 
+import {
+  loginRequest,
+  loginSuccess,
+  loginFailure,
+  signupRequest,
+  signupSuccess,
+  signupFailure,
+} from "../../redux/actions/authActions";
+import { useSelector, useDispatch } from "react-redux";
+import { setUserData } from "../../redux/actions/userActions.js";
+
 const Login = () => {
   const [isSignInForm, setIsSignInForm] = useState(true);
   const [formValue, setFormValue] = useState(null);
   const [loading, setLoading] = useState(false);
-  const { setUserData } = useContext(UserContext);
+  const dispatch = useDispatch();
 
   const [form] = Form.useForm();
-
   const navigate = useNavigate();
+
+  const {
+    isLoggedIn,
+    error,
+    loading: authLoading,
+  } = useSelector((state) => state.auth);
 
   useEffect(() => {
     const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
@@ -38,28 +54,25 @@ const Login = () => {
 
   const onFinish = async (values) => {
     setLoading(true);
+
     if (!isSignInForm) {
-      // Sign Up logic
+      // Sign Up Logic
       try {
         const userCredential = await createUserWithEmailAndPassword(
           auth,
           values.email,
           values.password
         );
-
         const user = userCredential.user;
 
-        await updateProfile(user, {
-          displayName: values.name,
-        });
+        await updateProfile(user, { displayName: values.name });
+        const userDetails = { email: user.email, displayName: values.name };
 
-        const userDetails = {
-          email: user.email,
-          displayName: values.name,
-        };
+        dispatch(setUserData(userDetails));
 
         localStorage.setItem("isLoggedIn", "true");
-        setUserData(userDetails);
+        localStorage.setItem("userData", JSON.stringify(userDetails));
+
         navigate("/");
       } catch (error) {
         console.error("Error during sign-up:", error.message);
@@ -73,9 +86,18 @@ const Login = () => {
           values.email,
           values.password
         );
-
         const user = userCredential.user;
+
+        const userDetails = {
+          email: user.email,
+          displayName: user.displayName,
+        };
+
+        dispatch(setUserData(userDetails));
+
         localStorage.setItem("isLoggedIn", "true");
+        localStorage.setItem("userData", JSON.stringify(userDetails));
+
         navigate("/");
       } catch (error) {
         console.error("Error during login:", error.message);
@@ -83,6 +105,13 @@ const Login = () => {
       }
     }
   };
+
+  useEffect(() => {
+    if (error) {
+      message.error(error);
+      setLoading(false);
+    }
+  }, [error]);
 
   return (
     <Flex

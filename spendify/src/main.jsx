@@ -20,6 +20,9 @@ import Incomes from "./Pages/Incomes/Incomes.jsx";
 import Expenses from "./Pages/Expenses/Expenses.jsx";
 import Transactions from "./Pages/Transactions/Transactions.jsx";
 import { UserProvider } from "./UserContext.jsx";
+import { Provider } from "react-redux";
+import store from "./redux/store.js";
+import NotFound from "./Pages/NotFound/NotFound.jsx";
 
 const ProtectedRoute = ({ children }) => {
   const navigate = useNavigate();
@@ -55,14 +58,20 @@ const appRouter = createBrowserRouter([
       { path: "transactions", element: <Transactions /> },
     ],
   },
+  {
+    path: "*",
+    element: <NotFound />,
+  },
 ]);
 
 createRoot(document.getElementById("root")).render(
-  <ThemeProvider>
-    <UserProvider>
-      <StrictMode>
+  <Provider store={store}>
+    <ThemeProvider>
+      <UserProvider>
+        {/* <StrictMode> */}
         <RouterProvider router={appRouter} />
-      </StrictMode>
-    </UserProvider>
-  </ThemeProvider>
+        {/* </StrictMode> */}
+      </UserProvider>
+    </ThemeProvider>
+  </Provider>
 );

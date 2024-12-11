@@ -1,24 +1,26 @@
 import React, { Component } from "react";
+import { Modal, Table, Empty, message, Popconfirm } from "antd";
+import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import { connect } from "react-redux";
+import CategoryForm from "../../components/CategoryForm/CategoryForm";
+import EditCategoryForm from "../../components/CategoryForm/EditCategoryForm";
+import {
+  setCategories,
+  addCategory,
+  deleteCategory,
+  editCategory,
+} from "../../redux/actions/categoryActions";
+import { db, auth } from "../../firebase";
 import {
   collection,
   addDoc,
-  getDocs,
-  onSnapshot,
-  query,
-  where,
-  doc,
   deleteDoc,
-  QuerySnapshot,
-  writeBatch,
-  getDoc,
+  doc,
+  onSnapshot,
 } from "firebase/firestore";
-import { db, auth } from "../../firebase";
-import CategoryForm from "../../components/CategoryForm/CategoryForm";
-import { Modal, Space, Table, Tag, Empty, message, Popconfirm } from "antd";
-import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import "./style.less";
-import "../../global.less";
-import EditCategoryForm from "../../components/CategoryForm/EditCategoryForm";
+
+import { saveState, loadCategoryState } from "../../utils/localStorageUtils";
 
 class Categories extends Component {
   constructor(props) {
@@ -26,40 +28,38 @@ class Categories extends Component {
     this.state = {
       isModalOpen: false,
       isEditModalOpen: false,
-      categories: [],
-      isEditing: false,
-      selectedCategory: [],
-      userId: null,
+      selectedCategory: null,
     };
   }
 
   componentDidMount() {
-    this.authUnsubscribe = auth.onAuthStateChanged((user) => {
-      if (user) {
-        const userId = user.uid;
-        this.setState({ userId });
+    const persistedState = loadCategoryState();
+    if (persistedState && persistedState.category) {
+      this.props.setCategories(persistedState.category);
+    }
 
-        const categoriesCollection = collection(
-          db,
-          `users/${userId}/categories`
-        );
-        this.unsubscribe = onSnapshot(categoriesCollection, (snapshot) => {
-          const categoriesData = snapshot.docs.map((doc) => ({
-            id: doc.id,
-            categoryDocId: doc.id,
-            ...doc.data(),
-          }));
-          this.setState({ categories: categoriesData });
-        });
-      } else {
-        console.error("User is not authenticated.");
-      }
-    });
+    const userId = auth.currentUser?.uid;
+    if (userId) {
+      const categoriesCollection = collection(db, `users/${userId}/categories`);
+
+      onSnapshot(categoriesCollection, (snapshot) => {
+        const categoriesData = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          categoryDocId: doc.id,
+          ...doc.data(),
+        }));
+
+        this.props.setCategories(categoriesData);
+
+        saveState({ category: categoriesData });
+      });
+    }
   }
 
-  componentWillUnmount() {
-    if (this.unsubscribe) this.unsubscribe();
-    if (this.authUnsubscribe) this.authUnsubscribe();
+  componentDidUpdate(prevProps) {
+    if (prevProps.categories !== this.props.categories) {
+      this.props.setCategories(this.props.categories);
+    }
   }
 
   toggleModal = (isOpen) => {
@@ -73,34 +73,47 @@ class Categories extends Component {
     });
   };
 
-  deleteCategory = async (id) => {
-    const user = auth.currentUser.uid;
+  addCategory = (category) => {
+    const userId = auth.currentUser?.uid;
+    if (userId) {
+      const categoriesCollection = collection(db, `users/${userId}/categories`);
+      addDoc(categoriesCollection, category)
+        .then((docRef) => {
+          this.props.addCategory({ id: docRef.id, ...category });
+          message.success("Category added successfully");
+        })
+        .catch((error) => {
+          console.error("Error adding category:", error.message);
+        });
+    }
+  };
 
-    try {
-      const categoryDocRef = doc(db, `users/${user}/categories`, id);
-      await deleteDoc(categoryDocRef);
-      this.setState((prevState) => ({
-        categories: prevState.categories.filter(
-          (category) => category.id !== id
-        ),
-      }));
-      message.success("Item Deleted Successfully");
-    } catch (error) {
-      console.error("Error deleting income:", error.message);
+  deleteCategory = (id) => {
+    const userId = auth.currentUser?.uid;
+    if (userId) {
+      const categoryDocRef = doc(db, `users/${userId}/categories`, id);
+      deleteDoc(categoryDocRef)
+        .then(() => {
+          this.props.deleteCategory(id);
+          message.success("Category deleted successfully");
+        })
+        .catch((error) => {
+          console.error("Error deleting category:", error.message);
+        });
     }
   };
 
   handleEdit = (data) => {
-    const { categoryDocId, name } = data;
     this.setState({
-      selectedCategory: { ...data },
+      selectedCategory: data,
       isEditModalOpen: true,
     });
+    this.props.editCategory(data);
   };
 
   render() {
-    const { isModalOpen, isEditModalOpen, categories, selectedCategory } =
-      this.state;
+    const { isModalOpen, isEditModalOpen, selectedCategory } = this.state;
+    const { categories } = this.props;
 
     const columns = [
       {
@@ -165,12 +178,14 @@ class Categories extends Component {
             onCancel={() => this.toggleModal(false)}
             style={{ maxWidth: 400 }}
           >
-            <CategoryForm closeModalOnSubmit={() => this.toggleModal(false)} />
+            <CategoryForm
+              closeModalOnSubmit={() => this.toggleModal(false)}
+              addCategory={this.addCategory}
+            />
           </Modal>
 
-          {/* Edit Income Modal */}
           <Modal
-            title="Edit Income"
+            title="Edit Category"
             footer={false}
             open={isEditModalOpen}
             onOk={() => this.toggleEditModal(false)}
@@ -185,7 +200,6 @@ class Categories extends Component {
 
           <div className="table">
             <div className="table_component" role="region" tabIndex="0">
-              {/* ANTD */}
               {categories.length === 0 ? (
                 <Empty
                   image={Empty.PRESENTED_IMAGE_SIMPLE}
@@ -202,4 +216,15 @@ class Categories extends Component {
   }
 }
 
-export default Categories;
+const mapStateToProps = (state) => ({
+  categories: state.category?.categories || [],
+});
+
+const mapDispatchToProps = {
+  setCategories,
+  addCategory,
+  deleteCategory,
+  editCategory,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Categories);
