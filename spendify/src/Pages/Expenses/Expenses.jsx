@@ -19,6 +19,8 @@ import {
   setTotalItems,
   setCategories,
 } from "../../redux/actions/expenseActions";
+import "../../global.less";
+import "./style.less";
 import { db, auth } from "../../firebase";
 import {
   collection,
