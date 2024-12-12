@@ -108,7 +108,9 @@ function App() {
             height: "64px",
             position: "absolute",
             right: "-3rem",
-            color: "white",
+            background: "none",
+            border: "none",
+            outline: "none",
           }}
         >
           <span className="ant-btn-icon">
