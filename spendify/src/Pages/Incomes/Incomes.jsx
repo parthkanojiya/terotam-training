@@ -202,9 +202,13 @@ const Incomes = () => {
         <div className="transactions-heading flex justify-between item-center">
           <h3>Incomes</h3>
           <div className="flex justify-between item-center gap-4">
-            <button className="import-csv" onClick={() => setIsModalOpen(true)}>
+            <Button
+              type="primary"
+              size="middle"
+              onClick={() => setIsModalOpen(true)}
+            >
               Add Income
-            </button>
+            </Button>
           </div>
         </div>
 
@@ -308,6 +312,8 @@ const Incomes = () => {
               total: totalItems,
               onChange: handlePageChange,
             }}
+            scroll={{ x: "max-content" }}
+            responsive
           />
         </div>
       </div>

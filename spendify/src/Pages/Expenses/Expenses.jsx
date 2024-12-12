@@ -210,11 +210,7 @@ const Expenses = () => {
 
         <div className="transactions-heading flex justify-between item-center">
           <h3>Expenses</h3>
-          <Button
-            type="primary"
-            onClick={() => toggleModal(true)}
-            style={{ marginBottom: 20 }}
-          >
+          <Button type="primary" onClick={() => toggleModal(true)}>
             Add Expense
           </Button>
         </div>
@@ -225,7 +221,7 @@ const Expenses = () => {
           onOk={() => setIsModalOpen(false)}
           onCancel={() => setIsModalOpen(false)}
           footer={null}
-          style={{ maxWidth: 400 }}
+          // style={{ maxWidth: 400, }}
         >
           <ExpenseForm closeModalOnSubmit={() => setIsModalOpen(false)} />
         </Modal>
@@ -236,7 +232,7 @@ const Expenses = () => {
           onOk={() => setIsEditModalOpen(false)}
           onCancel={() => setIsEditModalOpen(false)}
           footer={null}
-          style={{ maxWidth: 400 }}
+          // style={{ maxWidth: 400 }}
         >
           <EditExpenseForm
             expenseData={selectedExpense}
@@ -320,6 +316,8 @@ const Expenses = () => {
                 total: totalItems,
                 onChange: handlePageChange,
               }}
+              scroll={{ x: "max-content" }}
+              responsive
             />
           </div>
         </div>

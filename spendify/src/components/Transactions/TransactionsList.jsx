@@ -10,6 +10,8 @@ import {
   query,
   startAfter,
 } from "firebase/firestore";
+import "../../global.less";
+import "./style.less";
 import { db, auth } from "../../firebase";
 import {
   Button,
@@ -219,15 +221,6 @@ const TransactionsList = () => {
 
         <div className="transactions-heading flex justify-between item-center">
           <h3>Transactions</h3>
-
-          <div className="flex justify-between item-center gap-4">
-            <button className="export-csv" disabled title="Export to CSV">
-              Export to CSV
-            </button>
-            <button className="import-csv" disabled title="Import from CSV">
-              Import from CSV
-            </button>
-          </div>
         </div>
 
         <div className="table">
@@ -245,6 +238,8 @@ const TransactionsList = () => {
                     onChange: handlePageChange,
                   }
             }
+            scroll={{ x: "max-content" }}
+            responsive
           />
         </div>
       </div>

@@ -49,10 +49,7 @@ const MainHeader = () => {
   return (
     <header>
       <div className="header-wrapper">
-        <div className="search-wrapper flex item-center gap-4">
-          <button className="light-dark-btn" onClick={toggleTheme}>
-            {theme === "dark" ? <LightMode /> : <DarkMode />}
-          </button>
+        <div className="search-wrapper flex item-center">
           <p className="display-name">
             {userData?.displayName ? (
               <span style={{ display: "flex", alignItems: "center" }}>
@@ -63,8 +60,11 @@ const MainHeader = () => {
               ""
             )}
           </p>
+          <button className="light-dark-btn" onClick={toggleTheme}>
+            {theme === "dark" ? <LightMode /> : <DarkMode />}
+          </button>
           <Flex gap="small">
-            <Button type="primary" onClick={handleSignOut}>
+            <Button type="primary" onClick={handleSignOut} size="middle">
               Logout
             </Button>
           </Flex>

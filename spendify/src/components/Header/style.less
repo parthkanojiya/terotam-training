@@ -3,6 +3,8 @@ header {
     padding: 0 2rem;
 
     .search-wrapper {
+      gap: 5px;
+
       .search-bar {
         visibility: hidden;
       }
@@ -56,6 +58,11 @@ header {
         font-family: "SF Mono", monospace;
         font-weight: 800;
       }
+    }
+  }
+  @media (max-width: 768px) {
+    .header-wrapper {
+      padding: 0 1rem;
     }
   }
 }
