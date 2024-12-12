@@ -176,7 +176,7 @@ class Categories extends Component {
             open={isModalOpen}
             onOk={() => this.toggleModal(false)}
             onCancel={() => this.toggleModal(false)}
-            style={{ maxWidth: 400 }}
+            // style={{ maxWidth: 400 }}
           >
             <CategoryForm
               closeModalOnSubmit={() => this.toggleModal(false)}
@@ -190,7 +190,7 @@ class Categories extends Component {
             open={isEditModalOpen}
             onOk={() => this.toggleEditModal(false)}
             onCancel={() => this.toggleEditModal(false)}
-            style={{ maxWidth: 400 }}
+            // style={{ maxWidth: 400 }}
           >
             <EditCategoryForm
               categoryData={selectedCategory}
